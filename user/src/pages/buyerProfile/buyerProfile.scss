@@ -1,0 +1,48 @@
+.buyer_profile {
+  height: 100vh;
+  overflow-x: hidden;
+  .sections_profile {
+    width: 100%;
+    height: calc(100vh - 70px);
+    background-color: white;
+    position: relative;
+    top: 70px;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none; //for firefox
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > * {
+      width: 100vw;
+      height: calc(100vh - 70px);
+      scroll-snap-align: start;
+    }
+    .form {
+      display: flex;
+      margin-top: 50px;
+      width: 1000px;
+      float: left;
+      margin-left: 50px;
+      .form_left {
+        margin-right: 200px;
+        .image {
+          height: 300px;
+          width: 300px;
+          margin-right: 100px;
+          float: left;
+        }
+      }
+      .form_right {
+        .text_field {
+          margin-top: 15px;
+          width: 280%;
+        }
+        .btn {
+          margin-top: 35px;
+        }
+      }
+    }
+  }
+}
