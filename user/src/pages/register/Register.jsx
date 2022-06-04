@@ -13,17 +13,15 @@ const Register = () => {
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
 
-  const initialValues = {
-    username: "",
-    password: "",
-  };
   const navigate = useNavigate();
-  const handleRegister = (formValue) => {
-    const { username, password } = formValue;
+  const handleRegister = () => {
     setSuccessful(false);
     dispatch(register({ username, password }))
       .unwrap()
@@ -41,16 +39,12 @@ const Register = () => {
       <Link href="/">
         <p className="title">Jovinn.</p>
       </Link>
-      <form
-        className="form"
-        onSubmit={handleRegister}
-        initialValues={initialValues}
-      >
+      <div className="form">
         <TextField
           className="input"
           variant="outlined"
           placeholder="Tên đăng nhập *"
-          name="username"
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <TextField
@@ -58,7 +52,7 @@ const Register = () => {
           type="password"
           variant="outlined"
           placeholder="Mật khẩu *"
-          name="password"
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
         <TextField
@@ -84,9 +78,10 @@ const Register = () => {
           className="input"
           variant="outlined"
           placeholder="Email *"
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <Button variant="outlined" className="btn" type="submit">
+        <Button variant="outlined" className="btn" onClick={handleRegister}>
           Register
         </Button>
         <span className="link">
@@ -95,7 +90,7 @@ const Register = () => {
             Đăng nhập
           </Link>
         </span>
-      </form>
+      </div>
     </div>
   );
 };
