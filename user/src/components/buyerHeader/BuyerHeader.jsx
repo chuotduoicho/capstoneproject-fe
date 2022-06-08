@@ -11,24 +11,24 @@ import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { logout } from "../../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@material-ui/core";
 export default function BuyerHeader() {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
-  // const handleLogout = (event) => {
-  //   e.preventDefault();
-  //   navigate("/login");
-  // };
-  // const handleSwitch = (event) => {
-  //   e.preventDefault();
-  //   navigate("/sellerHome");
-  // };
+  const logOut = useCallback(() => {
+    dispatch(logout());
+  }, [dispatch]);
+
+  //  Process UI
   const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
@@ -145,7 +145,11 @@ export default function BuyerHeader() {
                           Quản lí ví
                         </MenuItem>
                       </Link>
-                      <Link to="/login" style={{ textDecoration: "none" }}>
+                      <Link
+                        to="/login"
+                        style={{ textDecoration: "none" }}
+                        onClick={logOut}
+                      >
                         <MenuItem style={{ color: "black" }}>
                           Đăng xuất
                         </MenuItem>
