@@ -1,7 +1,7 @@
 import { React, useState } from "react";
-import Contact from "../../components/contact/Contact";
+import Contact from "../../../components/contact/Contact";
 import "./serviceDetail.scss";
-import BuyerHeader from "../../components/buyerHeader/BuyerHeader";
+import BuyerHeader from "../../../components/buyerHeader/BuyerHeader";
 import AppBar from "@material-ui/core/AppBar";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";

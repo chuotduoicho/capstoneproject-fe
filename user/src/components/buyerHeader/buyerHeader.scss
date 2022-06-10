@@ -1,16 +1,18 @@
 @import "../../global.scss";
 
-.topbar {
+.buyerHeader {
   width: 100%;
   height: 75px;
   background-color: white;
   color: $mainColor;
-  position: fixed;
+  position: relative;
   top: 0;
   z-index: 3;
   transition: all 1s ease;
   flex-direction: column;
-  .wrapper {
+  border-bottom: 1px solid #7f7276;
+  margin-bottom: 10px;
+  .buyerHeader_wrapper {
     padding: 10px 30px;
     display: flex;
     align-items: center;
@@ -109,12 +111,5 @@
         }
       }
     }
-  }
-  .list {
-    display: flex;
-    background-color: white;
-    justify-content: center;
-    list-style: none;
-    padding: 10px 0;
   }
 }

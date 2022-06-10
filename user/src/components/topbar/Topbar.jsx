@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Topbar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   return (
-    <div className={"topbar " + (menuOpen && "active")}>
+    <div className={"topbarHome " + (menuOpen && "active")}>
       <div className="wrapper">
         <div className="left">
           <a href="#intro" className="logo">
@@ -22,13 +22,16 @@ export default function Topbar({ menuOpen, setMenuOpen }) {
             </Link>
           </div>
           <div className="itemButtons">
-            <Button className="button" onClick={() => navigate("/register")}>
+            <Button
+              className="button"
+              onClick={() => navigate("/auth/register")}
+            >
               <span>Đăng kí</span>
             </Button>
             <Button
               variant="outlined"
               className="button"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/auth/login")}
             >
               <span>Đăng nhập</span>
             </Button>

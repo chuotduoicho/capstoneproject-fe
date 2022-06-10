@@ -81,5 +81,44 @@ const authSlice = createSlice({
   },
 });
 
+export const sendMail = createAsyncThunk(
+  "auth/sendMail",
+  async ({ email }, thunkAPI) => {
+    try {
+      const data = await AuthService.sendMail(email);
+      console.log(data);
+      return { user: data };
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
+
+export const setNewPassword = createAsyncThunk(
+  "auth/setNewPassword",
+  async ({ email, password }, thunkAPI) => {
+    try {
+      const data = await AuthService.login(email, password);
+      console.log(data);
+      return { user: data };
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue();
+    }
+  }
+);
 const { reducer } = authSlice;
 export default reducer;

@@ -12,53 +12,11 @@ import {
   Button,
   Container,
 } from "@material-ui/core";
-import {
-  Favorite,
-  FavoriteBorderRounded,
-  FavoriteOutlined,
-  FavoriteSharp,
-  Share,
-} from "@material-ui/icons";
+import { FavoriteOutlined } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
-import CategoryList from "../categoryList/CategoryList";
 export default function ServiceList() {
-  const navigate = useNavigate();
-  const [selected, setSelected] = useState("featured");
-  const [data, setData] = useState([]);
-  const list = [
-    {
-      id: "featured",
-      title: "Featured",
-    },
-    {
-      id: "web",
-      title: "Web App",
-    },
-    {
-      id: "mobile",
-      title: "Mobile App",
-    },
-    {
-      id: "design",
-      title: "Design",
-    },
-    {
-      id: "content",
-      title: "Content",
-    },
-  ];
   return (
     <div className="serviceList" id="intro">
-      <ul className="list">
-        {list.map((item) => (
-          <CategoryList
-            title={item.title}
-            active={selected === item.id}
-            setSelected={setSelected}
-            id={item.id}
-          />
-        ))}
-      </ul>
       <Container className="service_cardGrid" maxWidth="md">
         {/* End hero unit */}
         <Grid container spacing={4}>

@@ -5,8 +5,8 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import Link from "@material-ui/core/Link";
-import { register } from "../../redux/authSlice";
-import { clearMessage } from "../../redux/message";
+import { register } from "../../../redux/authSlice";
+import { clearMessage } from "../../../redux/message";
 
 const Register = () => {
   const [successful, setSuccessful] = useState(false);
@@ -33,7 +33,7 @@ const Register = () => {
       .then(() => {
         setSuccessful(true);
 
-        navigate("/login");
+        navigate("/auth/login");
       })
       .catch(() => {
         setSuccessful(false);
@@ -50,7 +50,7 @@ const Register = () => {
         <TextField
           className="input"
           variant="outlined"
-          placeholder="Tên đăng nhập *"
+          label="Tên đăng nhập"
           onChange={(e) => setUsername(e.target.value)}
           required
         />
@@ -58,7 +58,7 @@ const Register = () => {
           className="input"
           type="password"
           variant="outlined"
-          placeholder="Mật khẩu *"
+          label="Mật khẩu"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -66,27 +66,27 @@ const Register = () => {
           className="input"
           type="password"
           variant="outlined"
-          placeholder="Xác nhận mật khẩu *"
+          label="Xác nhận mật khẩu"
           required
         />
         <TextField
           className="input"
           variant="outlined"
-          placeholder="Họ *"
+          label="Họ"
           onChange={(e) => setFirstName(e.target.value)}
           required
         />
         <TextField
           className="input"
           variant="outlined"
-          placeholder="Tên *"
+          label="Tên"
           onChange={(e) => setLastName(e.target.value)}
           required
         />
         <TextField
           className="input"
           variant="outlined"
-          placeholder="Email *"
+          label="Email"
           onChange={(e) => setEmail(e.target.value)}
           required
         />
@@ -95,7 +95,7 @@ const Register = () => {
         </Button>
         <span className="link">
           Đã có tài khoản?{" "}
-          <Link href="/login" color="#5327ef">
+          <Link href="/auth/login" color="#5327ef">
             Đăng nhập
           </Link>
         </span>

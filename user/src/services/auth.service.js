@@ -29,10 +29,24 @@ const login = (username, password) => {
 const logout = () => {
   localStorage.removeItem("user");
 };
+const sendMail = (email) => {
+  return axios.post(API_URL + "auth/sendMail", {
+    email,
+  });
+};
+
+const setNewPassword = (email, password) => {
+  return axios.post(API_URL + "auth/setNewPassword", {
+    email,
+    password,
+  });
+};
 const authService = {
   register,
   login,
   logout,
+  sendMail,
+  setNewPassword,
 };
 
 export default authService;

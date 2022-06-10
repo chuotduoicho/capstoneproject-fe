@@ -55,7 +55,7 @@ export default function SellerHeader() {
     prevOpen.current = open;
   }, [open]);
   return (
-    <div className="topbar ">
+    <div className="sellerHeader ">
       <div className="wrapper">
         <div className="left">
           <a href="#intro" className="logo">
@@ -139,7 +139,7 @@ export default function SellerHeader() {
                       </Link>
                       <Link to="/sellerHome" style={{ textDecoration: "none" }}>
                         <MenuItem style={{ color: "black" }}>
-                          Trở thành người bán
+                          Trở thành người mua
                         </MenuItem>
                       </Link>
                       <Link
@@ -158,7 +158,7 @@ export default function SellerHeader() {
                           Quản lí ví
                         </MenuItem>
                       </Link>
-                      <Link to="/login" style={{ textDecoration: "none" }}>
+                      <Link to="/auth/login" style={{ textDecoration: "none" }}>
                         <MenuItem style={{ color: "black" }}>
                           Đăng xuất
                         </MenuItem>

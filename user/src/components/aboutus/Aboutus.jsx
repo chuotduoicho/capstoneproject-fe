@@ -45,16 +45,16 @@ export default function Aboutus() {
     },
   ];
   return (
-    <div className="testimonials" id="testimonials">
+    <div className="aboutus" id="testimonials">
       <h1>THÀNH VIÊN DỰ ÁN</h1>
-      <div className="container">
+      <div className="aboutus_container">
         {data.map((d) => (
           <div className={d.featured ? "card featured" : "card"}>
-            <div className="top">
-              <img className="user" src={d.img} alt="" />
+            <div className="aboutus_top">
+              <img className="aboutus_user" src={d.img} alt="" />
             </div>
-            <div className="center">{d.desc}</div>
-            <div className="bottom">
+            <div className="aboutus_center">{d.desc}</div>
+            <div className="aboutus_bottom">
               <h3>{d.name}</h3>
               <h4>{d.title}</h4>
             </div>

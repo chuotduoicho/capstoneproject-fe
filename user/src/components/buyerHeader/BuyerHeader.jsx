@@ -54,8 +54,8 @@ export default function BuyerHeader() {
     prevOpen.current = open;
   }, [open]);
   return (
-    <div className="topbar ">
-      <div className="wrapper">
+    <div className="buyerHeader ">
+      <div className="buyerHeader_wrapper">
         <div className="left">
           <a href="#intro" className="logo">
             Jovinn.
@@ -146,7 +146,7 @@ export default function BuyerHeader() {
                         </MenuItem>
                       </Link>
                       <Link
-                        to="/login"
+                        to="/auth/login"
                         style={{ textDecoration: "none" }}
                         onClick={logOut}
                       >

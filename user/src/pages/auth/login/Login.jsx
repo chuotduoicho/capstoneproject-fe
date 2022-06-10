@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
-import { clearMessage } from "../../redux/message";
-import { login } from "../../redux/authSlice";
+import { clearMessage } from "../../../redux/message";
+import { login } from "../../../redux/authSlice";
 import Link from "@material-ui/core/Link";
 const Login = () => {
   const [successful, setSuccessful] = useState(false);
@@ -43,7 +43,7 @@ const Login = () => {
         <TextField
           className="input"
           variant="outlined"
-          placeholder="Tên đăng nhập *"
+          label="Tên đăng nhập"
           onChange={(e) => setUsername(e.target.value)}
           required
         />
@@ -51,7 +51,7 @@ const Login = () => {
           className="input"
           variant="outlined"
           type="password"
-          placeholder="Mật khẩu *"
+          label="Mật khẩu"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -59,12 +59,12 @@ const Login = () => {
         <Button variant="outlined" className="btn" type="submit">
           Đăng nhập
         </Button>
-        <Link href="#" color="#5327ef" className="link">
+        <Link href="/auth/sendMail" color="#5327ef" className="link">
           Quên mật khẩu?
         </Link>
         <span className="link">
           Chưa có tài khoản?{" "}
-          <Link href="/register" color="#5327ef">
+          <Link href="/auth/register" color="#5327ef">
             Đăng kí
           </Link>
         </span>

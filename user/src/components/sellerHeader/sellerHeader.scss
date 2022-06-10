@@ -1,16 +1,17 @@
 @import "../../global.scss";
 
-.topbar {
+.sellerHeader {
   width: 100%;
   height: 63px;
   background-color: white;
   color: $mainColor;
-  position: fixed;
+  position: relative;
   top: 0;
   z-index: 3;
   transition: all 1s ease;
   flex-direction: column;
   border-bottom: 1px solid #7f7276;
+  margin-bottom: 10px;
   .wrapper {
     padding: 10px 30px;
     display: flex;

@@ -1,6 +1,6 @@
 @import "../../global.scss";
 
-.testimonials {
+.aboutus {
   background-color: rgb(226, 210, 210);
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@
     }
   }
 
-  .container {
+  .aboutus_container {
     width: 100%;
     height: 80%;
     display: flex;
@@ -63,17 +63,17 @@
         transform: scale(1.1);
       }
 
-      .top {
+      .aboutus_top {
         display: flex;
         align-items: center;
         justify-content: center;
 
         img {
-          &.left,
-          &.right {
+          &.aboutus_left,
+          &.aboutus_right {
             height: 25px;
           }
-          &.user {
+          &.aboutus_user {
             height: 150px;
             width: 150px;
             border-radius: 50%;
@@ -88,7 +88,7 @@
         }
       }
 
-      .center {
+      .aboutus_center {
         padding: 10px;
         border-radius: 10px;
         background-color: rgb(250, 244, 245);
@@ -98,7 +98,7 @@
           padding: 5px;
         }
       }
-      .bottom {
+      .aboutus_bottom {
         display: flex;
         align-items: center;
         flex-direction: column;
