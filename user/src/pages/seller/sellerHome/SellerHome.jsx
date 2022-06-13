@@ -46,7 +46,7 @@ export default function BuyerHome() {
             </div>
           </div>
         </div>
-        <div className="buyerHome_right">
+        <div className="sellerHome_right">
           <ServiceList className="service" />
         </div>
       </div>

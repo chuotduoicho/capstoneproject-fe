@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import Contact from "../../../components/guest/contact/Contact";
-import "./serviceDetail.scss";
+import "./buyerServiceDetail.scss";
 import AppBar from "@material-ui/core/AppBar";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
@@ -13,30 +13,14 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  InputLabel,
-  MenuItem,
   Modal,
   Radio,
   RadioGroup,
-  Select,
-  TextField,
 } from "@material-ui/core";
 import { Divider, Avatar, Grid, Paper } from "@material-ui/core";
-import Topbar from "../../../components/guest/topbar/Topbar";
 import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 500,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-  display: "flex",
-  flexDirection: "column",
-};
+import FalseStage from "../../../components/buyer/buyerOptionFalseStage/FalseStage";
+import TrueStage from "../../../components/buyer/buyerOptionTrueStage/TrueStage";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -72,8 +56,7 @@ function a11yProps(index) {
 export default function ServiceDetail() {
   const theme = useTheme();
   const [value, setValue] = useState(0);
-  const [numberStage, setNumberStage] = useState(0);
-  const [arr, setArr] = useState([]);
+
   const [selected, setSelected] = useState("false");
   const handleChangeSelect = (ev) => {
     setSelected(ev.target.value);
@@ -92,7 +75,7 @@ export default function ServiceDetail() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   return (
-    <div className="service_detail">
+    <div className="buyer_service_detail">
       <BuyerHeader />
       <div className="service_detail2">
         <div className="detail_left">
@@ -300,128 +283,7 @@ export default function ServiceDetail() {
                 aria-labelledby="keep-mounted-modal-title"
                 aria-describedby="keep-mounted-modal-description"
               >
-                <Box sx={style}>
-                  {selected === "false" ? (
-                    <>
-                      {" "}
-                      <Typography
-                        id="keep-mounted-modal-title"
-                        variant="h6"
-                        component="h2"
-                        style={{ marginBottom: "15px" }}
-                      >
-                        Tùy chọn gói dịch vụ
-                      </Typography>
-                      <TextField
-                        id="outlined-basic"
-                        label="Sản phẩm bàn giao"
-                        variant="outlined"
-                        style={{ marginBottom: "15px" }}
-                      />
-                      <TextField
-                        id="outlined-basic"
-                        label="Ngày Giao"
-                        variant="outlined"
-                        InputLabelProps={{ shrink: true }}
-                        type="date"
-                        style={{ marginBottom: "15px" }}
-                      />
-                      <TextField
-                        id="outlined-basic"
-                        label="Giá"
-                        variant="outlined"
-                        type="number"
-                        style={{ marginBottom: "15px" }}
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{
-                          marginTop: "15px",
-                          marginBottom: "15px",
-                        }}
-                      >
-                        Xác nhận
-                      </Button>{" "}
-                    </>
-                  ) : (
-                    <>
-                      <Typography
-                        id="keep-mounted-modal-title"
-                        variant="h6"
-                        component="h2"
-                        style={{ marginBottom: "15px" }}
-                      >
-                        Tùy chọn chia giai đoạn
-                      </Typography>
-                      <FormControl
-                        fullWidth
-                        style={{
-                          marginBottom: "10px",
-                        }}
-                      >
-                        <InputLabel id="demo-simple-select-label">
-                          Chọn số giai Đoạn
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={numberStage}
-                          label="Chọn số giai đoạn"
-                          onChange={(e) => (
-                            setNumberStage(e.target.value),
-                            (arr.length = e.target.value),
-                            arr.fill(0),
-                            setArr(arr)
-                          )}
-                        >
-                          <MenuItem value={2}>2 giai đoạn</MenuItem>
-                          <MenuItem value={3}>3 giai đoạn</MenuItem>
-                          <MenuItem value={4}>4 giai đoạn</MenuItem>
-                          <MenuItem value={5}>5 giai đoạn</MenuItem>
-                        </Select>
-                      </FormControl>
-                      {arr.map((value, index) => (
-                        <>
-                          <label>Giai đoạn {index + 1}</label>
-                          <div style={{ display: "flex" }}>
-                            <TextField
-                              id="outlined-basic"
-                              label="Sản phẩm bàn giao"
-                              variant="outlined"
-                              style={{ marginBottom: "15px" }}
-                            />
-                            <TextField
-                              id="outlined-basic"
-                              label="Ngày Giao"
-                              variant="outlined"
-                              InputLabelProps={{ shrink: true }}
-                              type="date"
-                              style={{ marginBottom: "15px" }}
-                            />
-                            <TextField
-                              id="outlined-basic"
-                              label="Giá"
-                              variant="outlined"
-                              type="number"
-                              style={{ marginBottom: "15px" }}
-                            />
-                          </div>
-                        </>
-                      ))}
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{
-                          marginTop: "15px",
-                          marginBottom: "15px",
-                        }}
-                      >
-                        Xác nhận
-                      </Button>{" "}
-                    </>
-                  )}
-                </Box>
+                {selected === "false" ? <FalseStage /> : <TrueStage />}
               </Modal>
             </TabPanel>
           </SwipeableViews>

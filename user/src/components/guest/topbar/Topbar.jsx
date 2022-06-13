@@ -6,7 +6,7 @@ export default function Topbar({ menuOpen, setMenuOpen }) {
   const navigate = useNavigate();
   return (
     <div className={"topbarHome " + (menuOpen && "active")}>
-      <div className="wrapper">
+      <div className="topbarHome_wrapper">
         <div className="left">
           <a href="#intro" className="logo">
             Jovinn.

@@ -3,6 +3,9 @@ import { setMessage } from "./message";
 
 import AuthService from "../services/auth.service";
 const user = JSON.parse(localStorage.getItem("user"));
+const initialState = user
+  ? { isLoggedIn: true, user }
+  : { isLoggedIn: false, user: null };
 export const register = createAsyncThunk(
   "auth/register",
   async ({ username, password, email, firstName, lastName }, thunkAPI) => {
@@ -52,34 +55,6 @@ export const login = createAsyncThunk(
 export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
 });
-const initialState = user
-  ? { isLoggedIn: true, user }
-  : { isLoggedIn: false, user: null };
-
-const authSlice = createSlice({
-  name: "auth",
-  initialState,
-  extraReducers: {
-    [register.fulfilled]: (state, action) => {
-      state.isLoggedIn = false;
-    },
-    [register.rejected]: (state, action) => {
-      state.isLoggedIn = false;
-    },
-    [login.fulfilled]: (state, action) => {
-      state.isLoggedIn = true;
-      state.user = action.payload.user;
-    },
-    [login.rejected]: (state, action) => {
-      state.isLoggedIn = false;
-      state.user = null;
-    },
-    [logout.fulfilled]: (state, action) => {
-      state.isLoggedIn = false;
-      state.user = null;
-    },
-  },
-});
 
 export const sendMail = createAsyncThunk(
   "auth/sendMail",
@@ -120,5 +95,30 @@ export const setNewPassword = createAsyncThunk(
     }
   }
 );
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  extraReducers: {
+    [register.fulfilled]: (state, action) => {
+      state.isLoggedIn = false;
+    },
+    [register.rejected]: (state, action) => {
+      state.isLoggedIn = false;
+    },
+    [login.fulfilled]: (state, action) => {
+      state.isLoggedIn = true;
+      state.user = action.payload.user;
+    },
+    [login.rejected]: (state, action) => {
+      state.isLoggedIn = false;
+      state.user = null;
+    },
+    [logout.fulfilled]: (state, action) => {
+      state.isLoggedIn = false;
+      state.user = null;
+    },
+  },
+});
+
 const { reducer } = authSlice;
 export default reducer;
