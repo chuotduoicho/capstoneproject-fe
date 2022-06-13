@@ -1,7 +1,6 @@
 import "./register.scss";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@material-ui/core";
-import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import Link from "@material-ui/core/Link";

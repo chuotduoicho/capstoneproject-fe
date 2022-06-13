@@ -1,27 +1,24 @@
-import React, { useState } from "react";
-import Topseller from "../../../components/topseller/Topseller";
-import Contact from "../../../components/contact/Contact";
-import ServiceList from "../../../components/serviceList/ServiceList";
+import React from "react";
+import Contact from "../../../components/guest/contact/Contact";
+import ServiceList from "../../../components/guest/serviceList/ServiceList";
 import "./sellerHome.scss";
-import BuyerHeader from "../../../components/buyerHeader/BuyerHeader";
-import { FilterListOutlined } from "@material-ui/icons";
-import CategoryList from "../../../components/categoryList/CategoryList";
 import SellerIntro from "../../../components/seller/sellerIntro/SellerIntro";
 import SellerSkill from "../../../components/seller/sellerSkill/SellerSkill";
 import SellerEducate from "../../../components/seller/sellerEducate/SellerEducate";
 import SellerCertificate from "../../../components/seller/sellerCertificate/SellerCertificate";
+import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
+import { Button } from "@material-ui/core";
 export default function BuyerHome() {
-  const [selected, setSelected] = useState("featured");
-
   return (
     <div className="sellerHome">
-      <BuyerHeader />
+      <SellerHeader />
       <div className="sellerHome_form">
         <div className="sellerHome_left">
           <div className="sellerHome_leftCard">
             <img
               src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
               style={{ width: "230px" }}
+              alt="avatar"
             />
             {/* <h1 className="lsTitle">Nguyễn Thế Vinh</h1> */}
             <div className="sellerHome_leftCard_lsItem">

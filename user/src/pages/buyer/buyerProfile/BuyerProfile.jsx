@@ -1,7 +1,7 @@
 import React from "react";
-import Contact from "../../../components/contact/Contact";
+import Contact from "../../../components/guest/contact/Contact";
 import "./buyerProfile.scss";
-import BuyerHeader from "../../../components/buyerHeader/BuyerHeader";
+import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
 import {
   Avatar,
   Container,

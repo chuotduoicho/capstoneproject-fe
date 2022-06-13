@@ -7,7 +7,7 @@ import { clearMessage } from "../../../../redux/message";
 import Link from "@material-ui/core/Link";
 const VerifyEmail = () => {
   const [successful, setSuccessful] = useState(false);
-  const [OTP, setOTP] = useState("");
+  // const [OTP, setOTP] = useState("");
   const { message } = useSelector((state) => state.message);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const VerifyEmail = () => {
   const handleVerify = (e) => {
     e.preventDefault();
     navigate("/auth/setNewPassword");
+    setSuccessful(true);
     // console.log("user name password: ", { username, password });
     // dispatch(login({ username, password }))
     //   .unwrap()
@@ -45,7 +46,7 @@ const VerifyEmail = () => {
           className="input"
           variant="outlined"
           label="Nhập mã xác minh"
-          onChange={(e) => setOTP(e.target.value)}
+          // onChange={(e) => setOTP(e.target.value)}
           required
         />
 

@@ -6,17 +6,12 @@ import Login from "./pages/auth/login/Login";
 import Register from "./pages/auth/register/Register";
 import BuyerHome from "./pages/buyer/buyerHome/BuyerHome";
 import BuyerProfile from "./pages/buyer/buyerProfile/BuyerProfile";
+import BuyerServiceDetail from "./pages/buyer/buyerServiceDetail/BuyerServiceDetail";
 import Home from "./pages/guest/home/Home";
 import ServiceDetail from "./pages/guest/serviceDetail/ServiceDetail";
+import SellerCreateService from "./pages/seller/sellerCreateService/SellerCreateService";
 import SellerHome from "./pages/seller/sellerHome/SellerHome";
-// import BuyerHome from "./pages/buyerHome/BuyerHome";
-// import BuyerProfile from "./pages/buyerProfile/BuyerProfile";
-// import Home from "./pages/home/Home";
-// import Login from "./pages/login/Login";
-// import Register from "./pages/register/Register";
-// import SellerHome from "./pages/sellerHome/SellerHome";
-// import ServiceDetail from "./pages/serviceDetail/ServiceDetail";
-
+import SellerServiceDetail from "./pages/seller/sellerServiceDetail/SellerServiceDetail";
 function App() {
   return (
     <div>
@@ -24,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/">
             <Route index element={<Home />} />
+            <Route path="serviceDetail" element={<ServiceDetail />} />
           </Route>
           <Route path="/auth">
             <Route path="login" element={<Login />} />
@@ -36,11 +32,12 @@ function App() {
             <Route index element={<BuyerHome />} />
 
             <Route path="profile" element={<BuyerProfile />} />
-
-            <Route path="service" element={<ServiceDetail />} />
+            <Route path="serviceDetail" element={<BuyerServiceDetail />} />
           </Route>
           <Route path="/sellerhome">
             <Route index element={<SellerHome />} />
+            <Route path="createService" element={<SellerCreateService />} />
+            <Route path="serviceDetail" element={<SellerServiceDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>

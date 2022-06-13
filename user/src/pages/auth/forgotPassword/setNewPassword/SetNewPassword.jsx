@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import { clearMessage } from "../../../../redux/message";
 import Link from "@material-ui/core/Link";
+import Alert from "@material-ui/lab/Alert";
 const SetNewPassword = () => {
   const [successful, setSuccessful] = useState(false);
   const [password, setPassword] = useState("");

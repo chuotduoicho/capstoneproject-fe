@@ -1,17 +1,26 @@
-import React, { useState } from "react";
-import Topseller from "../../../components/topseller/Topseller";
-import Contact from "../../../components/contact/Contact";
-import ServiceList from "../../../components/serviceList/ServiceList";
+import React, { useState, useEffect } from "react";
+import Topseller from "../../../components/guest/topseller/Topseller";
+import Contact from "../../../components/guest/contact/Contact";
+import ServiceList from "../../../components/guest/serviceList/ServiceList";
 import "./buyerHome.scss";
-import BuyerHeader from "../../../components/buyerHeader/BuyerHeader";
+import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
 import { FilterListOutlined } from "@material-ui/icons";
-import CategoryList from "../../../components/categoryList/CategoryList";
+import CategoryList from "../../../components/guest/categoryList/CategoryList";
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export default function BuyerHome() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [selected, setSelected] = useState("featured");
   const [data, setData] = useState([]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/auth/login");
+  //   }
+  // }, [user]);
   const list = [
     {
       id: "featured",
@@ -34,7 +43,7 @@ export default function BuyerHome() {
       title: "Content",
     },
   ];
-  const [age, setAge] = React.useState("");
+  const [age, setAge] = useState("");
 
   const handleChange = (event) => {
     setAge(event.target.value);
@@ -80,20 +89,6 @@ export default function BuyerHome() {
                 </Select>
               </FormControl>
             </div>
-            {/* <div className="lsItem">
-              <label>Check-in Date</label>
-              <span onClick={() => setOpenDate(!openDate)}>{`${format(
-                dates[0].startDate,
-                "MM/dd/yyyy"
-              )} to ${format(dates[0].endDate, "MM/dd/yyyy")}`}</span>
-              {openDate && (
-                <DateRange
-                  onChange={(item) => setDates([item.selection])}
-                  minDate={new Date()}
-                  ranges={dates}
-                />
-              )}
-            </div> */}
             <div className="lsItem">
               <div className="lsOptions">
                 <div className="lsOptionItem">
