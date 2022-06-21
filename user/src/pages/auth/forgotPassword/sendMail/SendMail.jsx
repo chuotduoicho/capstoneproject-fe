@@ -18,7 +18,17 @@ const SendMail = () => {
 
   const handleSendMail = (e) => {
     e.preventDefault();
-    navigate("/auth/verifyMail");
+    dispatch(sendMail(email))
+      .unwrap()
+      .then(() => {
+        setSuccessful(true);
+
+        navigate("/auth/verifyMail");
+      })
+      .catch(() => {
+        setSuccessful(false);
+      });
+
     console.log("email: ", email);
     // dispatch(sendMail(email))
     //   .unwrap()
@@ -57,7 +67,7 @@ const SendMail = () => {
             className={successful ? "login_success" : "login_error"}
             role="alert"
           >
-            Email không tồn tại
+            {message}
           </div>
         )}
       </form>

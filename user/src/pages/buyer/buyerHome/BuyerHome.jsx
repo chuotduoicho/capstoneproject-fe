@@ -4,16 +4,31 @@ import Contact from "../../../components/guest/contact/Contact";
 import ServiceList from "../../../components/guest/serviceList/ServiceList";
 import "./buyerHome.scss";
 import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
-import { FilterListOutlined } from "@material-ui/icons";
+import { FilterListOutlined, Label } from "@material-ui/icons";
 import CategoryList from "../../../components/guest/categoryList/CategoryList";
-import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import {
+  Container,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {
+  fetchCategories,
+  selectAllCategories,
+} from "../../../redux/categorySlice";
+import { fetchServices, selectAllServices } from "../../../redux/serviceSlice";
+import Pagination from "@material-ui/lab/Pagination";
 export default function BuyerHome() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const listCategory = useSelector(selectAllCategories);
+  const listService = useSelector(selectAllServices);
   const [selected, setSelected] = useState("featured");
   const [data, setData] = useState([]);
   // useEffect(() => {
@@ -21,33 +36,20 @@ export default function BuyerHome() {
   //     navigate("/auth/login");
   //   }
   // }, [user]);
-  const list = [
-    {
-      id: "featured",
-      title: "Featured",
-    },
-    {
-      id: "web",
-      title: "Web App",
-    },
-    {
-      id: "mobile",
-      title: "Mobile App",
-    },
-    {
-      id: "design",
-      title: "Design",
-    },
-    {
-      id: "content",
-      title: "Content",
-    },
-  ];
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth/login");
+    } else {
+      dispatch(fetchCategories());
+      dispatch(fetchServices());
+    }
+  }, [user]);
   const [age, setAge] = useState("");
 
   const handleChange = (event) => {
     setAge(event.target.value);
   };
+  console.log(listService);
   return (
     <div className="buyerHome">
       <BuyerHeader />
@@ -55,7 +57,7 @@ export default function BuyerHome() {
         <div className="buyerHome_left">
           <div className="listSearch">
             <h1 className="lsTitle">
-              Bộ lọc <FilterListOutlined />
+              Lọc dịch vụ <FilterListOutlined />
             </h1>
             <div className="lsItem">
               <FormControl fullWidth>
@@ -122,16 +124,38 @@ export default function BuyerHome() {
         </div>
         <div className="buyerHome_right">
           <ul className="list">
-            {list.map((item) => (
+            {listCategory.slice(0, 5).map((item) => (
               <CategoryList
-                title={item.title}
+                title={item.name}
                 active={selected === item.id}
                 setSelected={setSelected}
                 id={item.id}
               />
             ))}
           </ul>
-          <ServiceList className="service" />
+          {/* <div className="sort">Sắp xếp theo:</div> */}
+          <div className="serviceList" id="intro">
+            <Container className="service_cardGrid" maxWidth="md">
+              {/* End hero unit */}
+              <Grid container spacing={4}>
+                {listService.slice(0, 9).map((item) => (
+                  <ServiceList
+                    className="service"
+                    id={item.id}
+                    image={item.gallery.imageGallery1}
+                    sellerId={item.sellerId}
+                    description={item.description}
+                    rating={item.impression}
+                  />
+                ))}
+              </Grid>
+              <Pagination
+                count={10}
+                color="primary"
+                className="service_pagging"
+              />
+            </Container>
+          </div>
         </div>
       </div>
       <div className="sections">

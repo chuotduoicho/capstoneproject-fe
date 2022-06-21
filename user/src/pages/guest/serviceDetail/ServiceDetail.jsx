@@ -23,6 +23,14 @@ import {
 } from "@material-ui/core";
 import { Divider, Avatar, Grid, Paper } from "@material-ui/core";
 import Topbar from "../../../components/guest/topbar/Topbar";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchServiceDetail,
+  selectServiceDetail,
+  selectServiceStatus,
+} from "../../../redux/serviceSlice";
 const style = {
   position: "absolute",
   top: "50%",
@@ -68,7 +76,9 @@ function a11yProps(index) {
     "aria-controls": `full-width-tabpanel-${index}`,
   };
 }
+
 export default function ServiceDetail() {
+  const serviceDetail = useSelector(selectServiceDetail);
   const theme = useTheme();
   const [value, setValue] = useState(0);
   const [numberStage, setNumberStage] = useState(0);
@@ -77,7 +87,6 @@ export default function ServiceDetail() {
   const handleChangeSelect = (ev) => {
     setSelected(ev.target.value);
   };
-  console.log(selected);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -90,6 +99,11 @@ export default function ServiceDetail() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  console.log("ssd", serviceDetail.packages);
+  const packages = [...serviceDetail.packages].sort(
+    (a, b) => a.price - b.price
+  );
+  console.log(serviceDetail);
   return (
     <div className="service_detail">
       <Topbar />
@@ -97,10 +111,7 @@ export default function ServiceDetail() {
       <div className="sections">
         <div className="service_detail">
           <div className="detail_left">
-            <h2>
-              Title Title Title Title TitleTitleTitle Title TitleTitleTitleTitle
-              Title
-            </h2>
+            <h2>{serviceDetail.description}</h2>
             <div className="seller_header">
               <img
                 src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
@@ -114,14 +125,7 @@ export default function ServiceDetail() {
               alt=""
             ></img>
             <h2>Mô tả</h2>
-            <p>
-              Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-              Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-              Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-              Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-              Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-              Mô tả Mô tả{" "}
-            </p>
+            <p>{serviceDetail.description}</p>
             <h2>Bình luận && đánh giá</h2>
             <Paper style={{ padding: "40px 20px", marginBottom: "30px" }}>
               <Grid container wrap="nowrap" spacing={2}>
@@ -206,13 +210,13 @@ export default function ServiceDetail() {
               style={{ border: "2px groove #d8d0d2" }}
             >
               <TabPanel value={value} index={0} dir={theme.direction}>
-                <h1>5$</h1>
+                <h1>{packages[0].price}$</h1>
                 <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  Astra Pro + Elementor Pro ( Licensed 1 Website )
+                  {packages[0].shortDescription}
                 </p>
-                <h4>⏲️ 1 Day Delivery</h4>
-                <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p>
+                <h4>⏲️ {packages[0].deliveryTime} Day Delivery</h4>
+                {/* <p>✔️ Theme Installation</p>
+                <p>✔️ 2 Plugins/Extensions</p> */}
                 <Button
                   variant="contained"
                   color="primary"
@@ -226,13 +230,13 @@ export default function ServiceDetail() {
                 </Button>
               </TabPanel>
               <TabPanel value={value} index={1} dir={theme.direction}>
-                <h1>10$</h1>
+                <h1>{packages[1].price}$</h1>
                 <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  Astra Pro + Elementor Pro ( Licensed 1 Website )
+                  {packages[1].shortDescription}
                 </p>
-                <h4>⏲️ 1 Day Delivery</h4>
-                <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p>
+                <h4>⏲️ {packages[1].deliveryTime} Day Delivery</h4>
+                {/* <p>✔️ Theme Installation</p>
+                <p>✔️ 2 Plugins/Extensions</p> */}
                 <Button
                   variant="contained"
                   color="primary"
@@ -246,13 +250,13 @@ export default function ServiceDetail() {
                 </Button>
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
-                <h1>20$</h1>
+                <h1>{packages[2].price}$</h1>
                 <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  Astra Pro + Elementor Pro ( Licensed 1 Website )
+                  {packages[2].shortDescription}
                 </p>
-                <h4>⏲️ 1 Day Delivery</h4>
-                <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p>
+                <h4>⏲️ {packages[2].deliveryTime} Day Delivery</h4>
+                {/* <p>✔️ Theme Installation</p>
+                <p>✔️ 2 Plugins/Extensions</p> */}
                 <Button
                   variant="contained"
                   color="primary"

@@ -20,6 +20,10 @@ import Package from "../../../components/seller/sellerCreateService/package/Pack
 import ProductImg from "../../../components/seller/sellerCreateService/productImg/ProductImg";
 import Confirm from "../../../components/seller/sellerCreateService/confirm/Confirm";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addService, selectServiceId } from "../../../redux/serviceSlice";
+import { useEffect } from "react";
 const QontoConnector = withStyles({
   alternativeLabel: {
     top: 10,
@@ -179,12 +183,33 @@ function getSteps() {
 }
 
 export default function SellerCreateService() {
+  const [service, setService] = useState({
+    sellerId: "eadbfb07-bab4-4405-a991-26fd9f40104c",
+    title: "Hello",
+    description: "abcdef",
+    status: "ACTIVE",
+    serviceType: {
+      id: "10c00b31-d23c-4fc9-bced-0651059419af",
+    },
+    gallery: {
+      imageGallery1:
+        "https://i1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=BWzFqMmUWVFC1OfpPSUqMA",
+    },
+    packages: [
+      {
+        title: "Noi Dung 1",
+        shortDescription: "Mo ta Ngan 1",
+        deliveryTime: "3",
+        price: "3.12",
+      },
+    ],
+  });
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return <Overview />;
+        return <Overview title={setTitle} />;
       case 1:
-        return <Package />;
+        return <Package packages={setPackages} />;
       case 2:
         return <ProductImg />;
       case 3:
@@ -194,10 +219,15 @@ export default function SellerCreateService() {
     }
   }
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const navigate = useNavigate();
   const handleNext = () => {
+    setService((preState) => ({
+      ...preState,
+      title: title,
+      status: "DEACTIVE",
+    }));
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -208,9 +238,52 @@ export default function SellerCreateService() {
   const handleReset = () => {
     setActiveStep(0);
   };
+
   const handleView = () => {
-    navigate("/serviceDetail");
+    navigate("/sellerHome/serviceDetail");
   };
+  const [title, setTitle] = useState("");
+  const [packages, setPackages] = useState([
+    {
+      title: "Noi Dung 1",
+      shortDescription: "Mo ta Ngan 1",
+      deliveryTime: "3",
+      price: "3.12",
+    },
+    {
+      title: "Noi Dung 2",
+      shortDescription: "Mo ta Ngan 2",
+      deliveryTime: "2",
+      price: "4",
+    },
+    {
+      title: "Noi Dung 3",
+      shortDescription: "Mo ta Ngan 3",
+      deliveryTime: "1",
+      price: "5",
+    },
+  ]);
+  const dispath = useDispatch();
+
+  const handleCreateActive = (e) => {
+    e.preventDefault();
+    dispath(addService(service));
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+  const handleCreateDeactive = async (e) => {
+    e.preventDefault();
+    setService((preState) => ({
+      ...preState,
+      status: "DEACTIVE",
+    }));
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+  useEffect(() => {
+    if (service.status === "DEACTIVE") dispath(addService(service));
+  }, [service]);
+  console.log("title", title);
+  console.log("package", packages);
+  console.log("service", service);
   return (
     <div className="sellerHome">
       <SellerHeader />
@@ -253,7 +326,7 @@ export default function SellerCreateService() {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleNext}
+                    onClick={handleCreateActive}
                     className={classes.button}
                   >
                     Tạo mới và mở
@@ -261,7 +334,7 @@ export default function SellerCreateService() {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleNext}
+                    onClick={handleCreateDeactive}
                     className={classes.button}
                   >
                     Tạo mới và tạm dừng

@@ -19,7 +19,10 @@ function App() {
         <Routes>
           <Route path="/">
             <Route index element={<Home />} />
-            <Route path="serviceDetail" element={<ServiceDetail />} />
+            <Route
+              path="serviceDetail/:serviceId"
+              element={<ServiceDetail />}
+            />
           </Route>
           <Route path="/auth">
             <Route path="login" element={<Login />} />
@@ -37,7 +40,7 @@ function App() {
           <Route path="/sellerhome">
             <Route index element={<SellerHome />} />
             <Route path="createService" element={<SellerCreateService />} />
-            <Route path="serviceDetail" element={<SellerServiceDetail />} />
+            <Route path=":serviceDetail" element={<SellerServiceDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -5,7 +5,7 @@ import AuthService from "../services/auth.service";
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
   ? { isLoggedIn: true, user }
-  : { isLoggedIn: false, user: null };
+  : { isLoggedIn: false, user: null, capcha: null };
 export const register = createAsyncThunk(
   "auth/register",
   async ({ username, password, email, firstName, lastName }, thunkAPI) => {
@@ -56,25 +56,9 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
 });
 
-export const sendMail = createAsyncThunk(
-  "auth/sendMail",
-  async ({ email }, thunkAPI) => {
-    try {
-      const data = await AuthService.sendMail(email);
-      console.log(data);
-      return { user: data };
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      thunkAPI.dispatch(setMessage(message));
-      return thunkAPI.rejectWithValue();
-    }
-  }
-);
+export const sendMail = createAsyncThunk("auth/sendMail", async (email) => {
+  const data = await AuthService.sendMail(email);
+});
 
 export const setNewPassword = createAsyncThunk(
   "auth/setNewPassword",
@@ -114,6 +98,15 @@ const authSlice = createSlice({
       state.user = null;
     },
     [logout.fulfilled]: (state, action) => {
+      state.isLoggedIn = false;
+      state.user = null;
+    },
+    [sendMail.fulfilled]: (state, action) => {
+      state.isLoggedIn = false;
+      state.user = null;
+      // state.capcha = action.payload;
+    },
+    [sendMail.rejected]: (state, action) => {
       state.isLoggedIn = false;
       state.user = null;
     },

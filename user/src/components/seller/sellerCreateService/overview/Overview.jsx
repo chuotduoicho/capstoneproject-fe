@@ -6,10 +6,11 @@ import {
   TextField,
 } from "@material-ui/core";
 import React from "react";
+import { useState } from "react";
 
-export default function Overview() {
-  const [value, setValue] = React.useState("female");
-  const [age, setAge] = React.useState("");
+export default function Overview({ title }) {
+  const [value, setValue] = useState("female");
+  const [age, setAge] = useState("");
 
   const handleChangeCountry = (event) => {
     setAge(event.target.value);
@@ -44,6 +45,7 @@ export default function Overview() {
           }}
           variant="outlined"
           label="Tiêu đề"
+          onChange={(e) => title(e.target.value)}
           required
         />
         <TextField

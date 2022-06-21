@@ -1,69 +1,45 @@
 import { useEffect, useState } from "react";
 import "./serviceFeature.scss";
-import {
-  featuredPortfolio,
-  webPortfolio,
-  mobilePortfolio,
-  designPortfolio,
-  contentPortfolio,
-} from "../../../data";
 import CategoryList from "../categoryList/CategoryList";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchCategories,
+  selectAllCategories,
+} from "../../../redux/categorySlice";
+import {
+  fetchServiceDetail,
+  fetchServices,
+  selectAllServices,
+} from "../../../redux/serviceSlice";
 export default function ServiceFeature() {
-  const [selected, setSelected] = useState("featured");
-  const [data, setData] = useState([]);
-  const list = [
-    {
-      id: "featured",
-      title: "Featured",
-    },
-    {
-      id: "web",
-      title: "Web App",
-    },
-    {
-      id: "mobile",
-      title: "Mobile App",
-    },
-    {
-      id: "design",
-      title: "Design",
-    },
-    {
-      id: "content",
-      title: "Content",
-    },
-  ];
-
+  const [id, setId] = useState(null);
+  const listCategory = useSelector(selectAllCategories);
+  const listService = useSelector(selectAllServices);
+  const [selected, setSelected] = useState("cat1");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
-    switch (selected) {
-      case "featured":
-        setData(featuredPortfolio);
-        break;
-      case "web":
-        setData(webPortfolio);
-        break;
-      case "mobile":
-        setData(mobilePortfolio);
-        break;
-      case "design":
-        setData(designPortfolio);
-        break;
-      case "content":
-        setData(contentPortfolio);
-        break;
-      default:
-        setData(featuredPortfolio);
+    dispatch(fetchCategories());
+    dispatch(fetchServices());
+  }, []);
+  console.log(id);
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchServiceDetail(id))
+        .unwrap()
+        .then(() => {
+          navigate("/serviceDetail/" + id);
+        });
     }
-  }, [selected]);
-
+  }, [id]);
   return (
     <div className="portfolio" id="portfolio">
       <h1>DỊCH VỤ NỔI BẬT</h1>
       <ul>
-        {list.map((item) => (
+        {listCategory.slice(0, 5).map((item) => (
           <CategoryList
-            title={item.title}
+            title={item.name}
             active={selected === item.id}
             setSelected={setSelected}
             id={item.id}
@@ -71,13 +47,11 @@ export default function ServiceFeature() {
         ))}
       </ul>
       <div className="container">
-        {data.map((d) => (
-          <Link to="/serviceDetail">
-            <div className="item">
-              <img src={d.img} alt="" />
-              <h3>{d.title}</h3>
-            </div>
-          </Link>
+        {listService.slice(0, 8).map((d) => (
+          <div className="item" onClick={() => setId(d.id)}>
+            <img src={d.gallery.imageGallery1} alt="" />
+            <h3>{d.title}</h3>
+          </div>
         ))}
       </div>
     </div>

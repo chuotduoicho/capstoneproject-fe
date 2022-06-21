@@ -1,9 +1,9 @@
 import { FormControlLabel, Grow, Switch, TextField } from "@material-ui/core";
 import React from "react";
+import { useState } from "react";
 
-export default function Package() {
-  const [checked, setChecked] = React.useState(false);
-
+export default function Package(packages) {
+  const [checked, setChecked] = useState(false);
   const handleChange = () => {
     setChecked((prev) => !prev);
   };

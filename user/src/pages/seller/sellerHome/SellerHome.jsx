@@ -7,8 +7,27 @@ import SellerSkill from "../../../components/seller/sellerSkill/SellerSkill";
 import SellerEducate from "../../../components/seller/sellerEducate/SellerEducate";
 import SellerCertificate from "../../../components/seller/sellerCertificate/SellerCertificate";
 import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
-import { Button } from "@material-ui/core";
-export default function BuyerHome() {
+import { Button, Container, Grid } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { selectAllCategories } from "../../../redux/categorySlice";
+import { fetchServices, selectAllServices } from "../../../redux/serviceSlice";
+import { useState } from "react";
+import Pagination from "@material-ui/lab/Pagination";
+import { useEffect } from "react";
+export default function SellerHome() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const listService = useSelector(selectAllServices);
+  const [selected, setSelected] = useState("featured");
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth/login");
+    } else {
+      dispatch(fetchServices());
+    }
+  }, [user]);
   return (
     <div className="sellerHome">
       <SellerHeader />
@@ -47,7 +66,28 @@ export default function BuyerHome() {
           </div>
         </div>
         <div className="sellerHome_right">
-          <ServiceList className="service" />
+          <div className="serviceList" id="intro">
+            <Container className="service_cardGrid" maxWidth="md">
+              {/* End hero unit */}
+              <Grid container spacing={4}>
+                {listService.slice(0, 9).map((item) => (
+                  <ServiceList
+                    className="service"
+                    id={item.id}
+                    image={item.gallery.imageGallery1}
+                    sellerId={item.sellerId}
+                    description={item.description}
+                    rating={item.impression}
+                  />
+                ))}
+              </Grid>
+              <Pagination
+                count={10}
+                color="primary"
+                className="service_pagging"
+              />
+            </Container>
+          </div>
         </div>
       </div>
       <div style={{ display: "flex" }}>

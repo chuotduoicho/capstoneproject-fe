@@ -11,13 +11,17 @@ import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Button } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 export default function SellerHeader() {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const logOut = useCallback(() => {
+    dispatch(logOut());
+  }, [dispatch]);
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -67,7 +71,9 @@ export default function SellerHeader() {
             aria-label="text primary button group"
             className="btn_group"
           >
-            <Button>Tạo dịch vụ</Button>
+            <Link to="/sellerHome/createService">
+              <Button>Tạo dịch vụ</Button>
+            </Link>
             <Button>Yêu cầu</Button>
             <Button>Hợp đồng</Button>
             <Button>Ví</Button>
@@ -128,7 +134,7 @@ export default function SellerHeader() {
                           Thông tin cá nhân
                         </MenuItem>
                       </Link>
-                      <Link to="/sellerHome" style={{ textDecoration: "none" }}>
+                      <Link to="/buyerHome" style={{ textDecoration: "none" }}>
                         <MenuItem style={{ color: "black" }}>
                           Trở thành người mua
                         </MenuItem>
@@ -149,7 +155,11 @@ export default function SellerHeader() {
                           Quản lí ví
                         </MenuItem>
                       </Link>
-                      <Link to="/auth/login" style={{ textDecoration: "none" }}>
+                      <Link
+                        to="/auth/login"
+                        style={{ textDecoration: "none" }}
+                        onClick={logOut}
+                      >
                         <MenuItem style={{ color: "black" }}>
                           Đăng xuất
                         </MenuItem>
