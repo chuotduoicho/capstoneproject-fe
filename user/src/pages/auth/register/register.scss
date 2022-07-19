@@ -5,14 +5,22 @@
   .form {
     max-width: 530px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
     background: white;
     padding: 20px;
     // margin-top: 30px;
     border: 2px solid #e0d4d8;
     .input {
       margin-bottom: 15px;
+    }
+    .input_role {
+      display: flex;
+      .input_radio {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
     }
     .btn {
       color: #7451f8;
@@ -37,6 +45,14 @@
       padding-top: 15px;
       padding-bottom: 15px;
       background-color: #d99fb2;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .login_success {
+      color: rgb(15, 14, 14);
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: #4a9b79;
       border-radius: 12px;
       text-align: center;
     }

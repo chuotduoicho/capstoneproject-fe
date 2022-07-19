@@ -1,6 +1,5 @@
 import "./sendMail.scss";
-import { useNavigate } from "react-router-dom";
-import { Button, TextField } from "@material-ui/core";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import { clearMessage } from "../../../../redux/message";
@@ -8,38 +7,34 @@ import Link from "@material-ui/core/Link";
 import { sendMail } from "../../../../redux/authSlice";
 const SendMail = () => {
   const [successful, setSuccessful] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const { message } = useSelector((state) => state.message);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
 
   const handleSendMail = (e) => {
+    setIsFetching(true);
     e.preventDefault();
-    dispatch(sendMail(email))
-      .unwrap()
-      .then(() => {
-        setSuccessful(true);
-
-        navigate("/auth/verifyMail");
-      })
-      .catch(() => {
-        setSuccessful(false);
-      });
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      setError("Email không hợp lệ!");
+    } else {
+      dispatch(sendMail(email))
+        .unwrap()
+        .then(() => {
+          setSuccessful(true);
+          setIsFetching(false);
+        })
+        .catch(() => {
+          setSuccessful(false);
+          setIsFetching(false);
+        });
+    }
 
     console.log("email: ", email);
-    // dispatch(sendMail(email))
-    //   .unwrap()
-    //   .then(() => {
-    //     setSuccessful(true);
-    //     navigate("/auth/verifyMail");
-    //     window.location.reload();
-    //   })
-    //   .catch(() => {
-    //     setSuccessful(false);
-    //   });
   };
   return (
     <div className="login">
@@ -70,6 +65,15 @@ const SendMail = () => {
             {message}
           </div>
         )}
+        {error != "" && (
+          <div
+            className={successful ? "login_success" : "login_error"}
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
+        {isFetching && <CircularProgress style={{ margin: "0 auto" }} />}
       </form>
     </div>
   );

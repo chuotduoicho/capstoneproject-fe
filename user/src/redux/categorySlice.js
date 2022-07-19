@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { setMessage } from "./message";
 import CategoryService from "../services/category.service";
-
+const categories = JSON.parse(localStorage.getItem("categories"));
+const initialState = categories
+  ? { listCategories: categories, status: "idle" }
+  : { listCategories: [], status: "idle" };
 export const fetchCategories = createAsyncThunk(
   "category/fetchCategories",
   async () => {
@@ -12,10 +15,7 @@ export const fetchCategories = createAsyncThunk(
 
 const categorySlice = createSlice({
   name: "category",
-  initialState: {
-    listCategories: [],
-    status: "idle",
-  },
+  initialState,
   extraReducers: {
     [fetchCategories.pending]: (state, action) => {
       state.status = "loading";

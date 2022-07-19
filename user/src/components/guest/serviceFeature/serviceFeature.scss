@@ -59,10 +59,19 @@
         width: 130px;
         height: 100px;
       }
-
-      h3 {
+      .absolute {
         position: absolute;
-        font-size: 20px;
+        h3 {
+          // position: absolute;
+          font-size: 20px;
+          text-align: center;
+        }
+        h4 {
+          // position: absolute;
+          font-size: 15px;
+          margin-top: 15px;
+          text-align: center;
+        }
       }
 
       img {

@@ -1,39 +1,19 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectTopSellers } from "../../../redux/userSlice";
 import "./topseller.scss";
 
 export default function Topseller() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const data = [
-    {
-      id: "1",
-      icon: "./assets/tung.jpg",
-      title: "Lê Thanh Tùng",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-      img: "https://99designs-blog.imgix.net/blog/wp-content/uploads/2018/10/attachment_100040756-e1538485934255.jpeg?auto=format&q=60&fit=max&w=930",
-      rating: 9,
-    },
-    {
-      id: "2",
-      icon: "./assets/vinh.jpg",
-      title: "Nguyễn Thế Vinh",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      img: "https://i.pinimg.com/originals/e9/c9/2f/e9c92f7869d682a6fa5a97fb8a298f30.jpg",
-      rating: 8,
-    },
-    {
-      id: "3",
-      icon: "./assets/son.jpg",
-      title: "Trần Xuân Sơn",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      img: "https://i.pinimg.com/originals/a9/f6/94/a9f69465d972a004ad581f245d6ad581.jpg",
-      rating: 6,
-    },
-  ];
+  const topSellers = useSelector(selectTopSellers);
+  console.log("top seller", topSellers);
 
   const handleClick = (way) => {
     way === "left"
       ? setCurrentSlide(currentSlide > 0 ? currentSlide - 1 : 2)
-      : setCurrentSlide(currentSlide < data.length - 1 ? currentSlide + 1 : 0);
+      : setCurrentSlide(
+          currentSlide < topSellers.length - 1 ? currentSlide + 1 : 0
+        );
   };
 
   return (
@@ -43,21 +23,32 @@ export default function Topseller() {
         className="topseller_slider"
         style={{ transform: `translateX(-${currentSlide * 100}vw)` }}
       >
-        {data.map((d) => (
-          <div className="topseller_container">
+        {topSellers.map((d) => (
+          <div className="topseller_container" key={d}>
             <div className="topseller_item">
               <div className="topseller_left">
                 <div className="topseller_leftContainer">
                   <div className="topseller_imgContainer">
-                    <img src={d.icon} alt="" />
+                    <img
+                      src={
+                        d.user.avatar
+                          ? d.user.avatar
+                          : "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png"
+                      }
+                      alt=""
+                    />
                   </div>
-                  <h2>{d.title}</h2>
-                  <p>Đánh giá : {d.rating} ⭐</p>
+                  <h2>
+                    {d.user.firstName} {d.user.lastName}
+                  </h2>
+                  <h3>{d.rankSeller}</h3>
+                  <p>{d.descriptionBio}</p>
+                  <h4>Total order: {d.totalOrderFinish}</h4>
                 </div>
               </div>
               <div className="topseller_right">
                 <img
-                  src="https://99designs-blog.imgix.net/blog/wp-content/uploads/2018/10/attachment_100040756-e1538485934255.jpeg?auto=format&q=60&fit=max&w=930"
+                  src="https://st2.depositphotos.com/1496410/5718/v/950/depositphotos_57189485-stock-illustration-button-top-seller.jpg"
                   alt=""
                 />
               </div>

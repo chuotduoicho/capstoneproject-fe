@@ -20,6 +20,7 @@
   }
   .service_cardGrid {
     .service_card {
+      cursor: pointer;
       .service_cardContent {
         .service_intro {
           display: flex;
@@ -37,6 +38,14 @@
         }
       }
       .service_cardAction {
+        background-color: rgb(69, 146, 14);
+        .service_rating {
+          float: right;
+          margin-left: 35px;
+        }
+      }
+      .service_cardAction2 {
+        background-color: rgb(211, 48, 48);
         .service_rating {
           float: right;
           margin-left: 35px;

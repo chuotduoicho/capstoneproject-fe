@@ -1,5 +1,5 @@
 import "./serviceList.scss";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -9,57 +9,71 @@ import {
   Typography,
   Button,
 } from "@material-ui/core";
-import { FavoriteOutlined } from "@material-ui/icons";
 export default function ServiceList({
   id,
   image,
-  sellerId,
   description,
   rating,
+  title,
+  price,
+  status,
+  firstName,
+  lastName,
+  avatar,
 }) {
   console.log(image);
+  const navigate = useNavigate();
   return (
-    <Grid item xs={12} sm={6} md={4}>
-      <Link to="/buyerHome/service" style={{ textDecoration: "none" }}>
-        <Card className="service_card">
-          <CardMedia
-            component="img"
-            height="194"
-            image={image}
-            alt="Paella dish"
-          />
-          <CardContent className="service_cardContent">
-            <div className="service_intro">
-              <CardMedia
-                component="img"
-                className="image"
-                image="assets/tai.jpg"
-                alt="Paella dish"
-              />
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="h2"
-                className="name"
-              >
-                Võ Đức Tài
-              </Typography>
-            </div>
-
-            <Typography>{description}.</Typography>
-          </CardContent>
-          <CardActions className="service_cardAction">
-            <Button size="small" color="primary">
-              Chi tiết
-            </Button>
-            {/* <Button size="small" color="primary">
-                    Edit
-                  </Button> */}
-            <FavoriteOutlined color="secondary" />
-            <p className="service_rating">Đánh giá : {rating} ⭐</p>
-          </CardActions>
-        </Card>
-      </Link>
+    <Grid item xs={12} sm={6} md={4} height="415">
+      <Card
+        className="service_card"
+        onClick={() => navigate("serviceDetail/" + id)}
+      >
+        <CardMedia
+          component="img"
+          height="194"
+          image={
+            image
+              ? image
+              : "https://img6.thuthuatphanmem.vn/uploads/2022/01/28/anh-ve-co-trang-nu-trung-quoc-dep-nhat_044336041.jpg"
+          }
+          alt="Paella dish"
+        />
+        <CardContent className="service_cardContent">
+          <div className="service_intro">
+            <CardMedia
+              component="img"
+              className="image"
+              image={
+                avatar
+                  ? avatar
+                  : "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png"
+              }
+              alt="Paella dish"
+            />
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="h2"
+              className="name"
+            >
+              {firstName} {lastName}
+            </Typography>
+          </div>
+          <Typography variant="h6">{title}.</Typography>
+          <Typography>{description}.</Typography>
+        </CardContent>
+        <CardActions
+          className={
+            status === "ACTIVE" ? "service_cardAction" : "service_cardAction2"
+          }
+        >
+          <Button size="small" color="primary">
+            Chi tiết
+          </Button>
+          <p className="service_rating">Giá : {price} $</p>
+        </CardActions>
+      </Card>
     </Grid>
   );
 }

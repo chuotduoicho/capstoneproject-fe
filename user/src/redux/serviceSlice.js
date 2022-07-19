@@ -1,7 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { setMessage } from "./message";
 import ServiceService from "../services/service.service";
-
+const services = JSON.parse(localStorage.getItem("services"));
+const initialState = services
+  ? {
+      listServices: services,
+      newServiceId: null,
+      status: "idle",
+    }
+  : {
+      listServices: [],
+      newServiceId: null,
+      status: "idle",
+    };
 export const fetchServices = createAsyncThunk(
   "service/fetchServices",
   async () => {
@@ -19,6 +30,15 @@ export const fetchServiceDetail = createAsyncThunk(
     return data;
   }
 );
+export const fetchServicesByCategory = createAsyncThunk(
+  "service/fetchServicesByCategory",
+  async (cateId) => {
+    console.log(cateId);
+    const data = await ServiceService.getServiceByCateId(cateId);
+    console.log(data);
+    return data;
+  }
+);
 export const addService = createAsyncThunk(
   "service/addService",
   async (service) => {
@@ -28,14 +48,19 @@ export const addService = createAsyncThunk(
     return data;
   }
 );
+export const updateService = createAsyncThunk(
+  "service/updateService",
+  async (obj) => {
+    console.log(obj);
+    const data = await ServiceService.updateService(obj);
+    console.log(data);
+    return data;
+  }
+);
 
 const serviceSlice = createSlice({
   name: "service",
-  initialState: {
-    listServices: [],
-    serviceDetail: null,
-    status: "idle",
-  },
+  initialState,
   extraReducers: {
     [fetchServices.pending]: (state, action) => {
       state.status = "loading";
@@ -47,24 +72,34 @@ const serviceSlice = createSlice({
     [fetchServices.rejected]: (state, action) => {
       state.status = "failed";
     },
-    [fetchServiceDetail.pending]: (state, action) => {
+    [fetchServicesByCategory.pending]: (state, action) => {
       state.status = "loading";
     },
-    [fetchServiceDetail.fulfilled]: (state, { payload }) => {
-      state.serviceDetail = payload;
+    [fetchServicesByCategory.fulfilled]: (state, { payload }) => {
+      state.listServices = payload;
       state.status = "success";
     },
-    [fetchServiceDetail.rejected]: (state, action) => {
+    [fetchServicesByCategory.rejected]: (state, action) => {
       state.status = "failed";
     },
     [addService.pending]: (state, action) => {
       state.status = "loading";
     },
     [addService.fulfilled]: (state, { payload }) => {
-      state.serviceDetail = payload;
+      state.newServiceId = payload.message;
       state.status = "success";
     },
     [addService.rejected]: (state, action) => {
+      state.status = "failed";
+    },
+    [updateService.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [updateService.fulfilled]: (state, { payload }) => {
+      state.newServiceId = payload.id;
+      state.status = "success";
+    },
+    [updateService.rejected]: (state, action) => {
       state.status = "failed";
     },
   },
@@ -74,6 +109,8 @@ const { reducer } = serviceSlice;
 export default reducer;
 
 export const selectAllServices = (state) => state.service.listServices;
-export const selectServiceDetail = (state) => state.service.serviceDetail;
-export const selectServiceId = (state) => state.service.serviceDetail.id;
+// export const selectServiceDetail = (state) => state.service.serviceDetail;
+export const selectNewServiceId = (state) => state.service.newServiceId;
 export const selectServiceStatus = (state) => state.service.status;
+export const selectServiceById = (state, serviceId) =>
+  state.service.listServices.find((service) => service.id === serviceId);

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { clearMessage } from "../../../redux/message";
 import { login } from "../../../redux/authSlice";
 import Link from "@material-ui/core/Link";
+import { fetchCurrentUser } from "../../../redux/userSlice";
 const Login = () => {
   const [successful, setSuccessful] = useState(false);
   const [username, setUsername] = useState("");
@@ -25,8 +26,10 @@ const Login = () => {
       .unwrap()
       .then(() => {
         setSuccessful(true);
+        dispatch(fetchCurrentUser());
+      })
+      .then(() => {
         navigate("/buyerhome");
-        window.location.reload();
       })
       .catch(() => {
         setSuccessful(false);
@@ -73,7 +76,7 @@ const Login = () => {
             className={successful ? "login_success" : "login_error"}
             role="alert"
           >
-            "Tên đăng nhập hoặc mật khẩu không đúng!"
+            {message}
           </div>
         )}
       </form>

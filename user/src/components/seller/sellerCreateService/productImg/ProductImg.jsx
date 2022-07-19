@@ -1,24 +1,16 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@material-ui/core";
-import { Image } from "@material-ui/icons";
 import React, { useState } from "react";
 
-export default function ProductImg() {
+export default function ProductImg({
+  galley1,
+  galley2,
+  galley3,
+  document,
+  galley1V,
+  galley2V,
+  galley3V,
+  documentV,
+}) {
   const [file, setFile] = useState("");
-  const [value, setValue] = useState("female");
-  const [age, setAge] = useState("");
-
-  const handleChangeCountry = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
   return (
     <div>
       <form
@@ -50,6 +42,7 @@ export default function ProductImg() {
                   : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
               }
               alt=""
+              defaultValue={galley1V}
               style={{ width: "100px" }}
             />
             <label

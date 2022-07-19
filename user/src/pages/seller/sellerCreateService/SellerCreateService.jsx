@@ -19,11 +19,19 @@ import Overview from "../../../components/seller/sellerCreateService/overview/Ov
 import Package from "../../../components/seller/sellerCreateService/package/Package";
 import ProductImg from "../../../components/seller/sellerCreateService/productImg/ProductImg";
 import Confirm from "../../../components/seller/sellerCreateService/confirm/Confirm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addService, selectServiceId } from "../../../redux/serviceSlice";
-import { useEffect } from "react";
+import {
+  addService,
+  fetchServices,
+  selectNewServiceId,
+  selectServiceById,
+  selectServiceId,
+  updateService,
+} from "../../../redux/serviceSlice";
+import { selectCurrentUser } from "../../../redux/userSlice";
+import Alert from "@material-ui/lab/Alert";
 const QontoConnector = withStyles({
   alternativeLabel: {
     top: 10,
@@ -166,6 +174,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: theme.spacing(1),
+    marginBottom: "10px",
   },
   instructions: {
     marginTop: theme.spacing(1),
@@ -183,35 +192,133 @@ function getSteps() {
 }
 
 export default function SellerCreateService() {
-  const [service, setService] = useState({
-    sellerId: "eadbfb07-bab4-4405-a991-26fd9f40104c",
-    title: "Hello",
-    description: "abcdef",
-    status: "ACTIVE",
-    serviceType: {
-      id: "10c00b31-d23c-4fc9-bced-0651059419af",
-    },
-    gallery: {
-      imageGallery1:
-        "https://i1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=BWzFqMmUWVFC1OfpPSUqMA",
-    },
-    packages: [
-      {
-        title: "Noi Dung 1",
-        shortDescription: "Mo ta Ngan 1",
-        deliveryTime: "3",
-        price: "3.12",
-      },
-    ],
-  });
+  const { serviceId } = useParams();
+  const serviceDetail = useSelector((state) =>
+    selectServiceById(state, serviceId)
+  );
+  console.log("service", serviceDetail);
+  const currentUser = useSelector(selectCurrentUser);
+  const newServiceId = useSelector(selectNewServiceId);
+  console.log("new service id", newServiceId);
+  // const sellerId = currentUser.seller.id;
+  // const packages = [...serviceDetail.packages].sort(
+  //   (a, b) => a.price - b.price
+  // );
+  const [title, setTitle] = useState(serviceId ? serviceDetail.title : "");
+  const [description, setDescription] = useState(
+    serviceId ? serviceDetail.description : ""
+  );
+  const [subCateId, setSubCateId] = useState(
+    serviceId ? serviceDetail.subcategory.id : ""
+  );
+  const handleChangeTitle = (e) => {
+    setTitle(e.target.value);
+  };
+  const handleChangeDes = (e) => {
+    setDescription(e.target.value);
+  };
+  const handleChangeSubcateId = (e) => {
+    setSubCateId(e.target.value);
+  };
+  const [packages, setPackages] = useState(
+    serviceId
+      ? serviceDetail.packages
+      : [
+          {
+            title: "",
+            shortDescription: "",
+            deliveryTime: "",
+            price: "",
+            contractCancelFee: "",
+          },
+        ]
+  );
+  const [checked, setChecked] = useState(false);
+  const handleChange = () => {
+    if (!checked) {
+      setPackages([
+        ...packages,
+        {
+          title: "",
+          shortDescription: "",
+          deliveryTime: "",
+          price: "",
+          contractCancelFee: "",
+        },
+        {
+          title: "",
+          shortDescription: "",
+          deliveryTime: "",
+          price: "",
+          contractCancelFee: "",
+        },
+      ]);
+      setChecked((prev) => !prev);
+    } else if (checked && packages.length > 1) {
+      const list = [...packages];
+      list.pop();
+      list.pop();
+      setPackages(list);
+      setChecked((prev) => !prev);
+    }
+  };
+  function handlePackageChange(e, index) {
+    const { name, value } = e.target;
+    const list = [...packages];
+    list[index][name] = value;
+    setPackages(list);
+  }
+  console.log("packages", packages);
+  const [galley1, setGallery1] = useState(
+    "https://i1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=BWzFqMmUWVFC1OfpPSUqMA"
+  );
+  const [galley2, setGallery2] = useState(null);
+  const [galley3, setGallery3] = useState(null);
+  const [document, setDocument] = useState(null);
+  const handleChangeGallery1 = (e) => {
+    setGallery1(e.target.value);
+  };
+  const handleChangeGallery2 = (e) => {
+    setGallery2(e.target.value);
+  };
+  const handleChangeGallery3 = (e) => {
+    setGallery3(e.target.value);
+  };
+  const handleChangeDocument = (e) => {
+    setDocument(e.target.value);
+  };
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return <Overview title={setTitle} />;
+        return (
+          <Overview
+            title={handleChangeTitle}
+            description={handleChangeDes}
+            subCateId={handleChangeSubcateId}
+            titleDf={title}
+            descriptionDf={description}
+            subCateIdDf={subCateId}
+          />
+        );
       case 1:
-        return <Package packages={setPackages} />;
+        return (
+          <Package
+            packages={packages}
+            checked={checked}
+            handleChange={handleChange}
+            handlePackageChange={handlePackageChange}
+          />
+        );
+
       case 2:
-        return <ProductImg />;
+        return (
+          <ProductImg
+            galley1={handleChangeGallery1}
+            galley2={handleChangeGallery2}
+            galley3={handleChangeGallery3}
+            document={handleChangeDocument}
+          />
+        );
       case 3:
         return <Confirm />;
       default:
@@ -220,17 +327,73 @@ export default function SellerCreateService() {
   }
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const steps = getSteps();
   const navigate = useNavigate();
   const handleNext = () => {
-    setService((preState) => ({
-      ...preState,
-      title: title,
-      status: "DEACTIVE",
-    }));
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+    setError("");
+    if (activeStep == 0) {
+      if (title == "") {
+        setError("Chưa nhập tiêu đề!");
+      } else if (description == "") {
+        setError("Chưa nhập mô tả!");
+      } else if (subCateId == "") {
+        setError("Chưa chọn danh mục!");
+      } else {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        setError("");
+      }
+    }
 
+    if (activeStep == 1) {
+      const check = packages.map((p, index) => {
+        if (p.title == "") {
+          setError("Chưa nhập tiêu đề gói " + (index + 1));
+          return false;
+        } else if (p.shortDescription == "") {
+          setError("Chưa nhập sản phẩm bàn giao gói " + (index + 1));
+          return false;
+        } else if (
+          p.shortDescription.length < 20 ||
+          p.shortDescription.length > 500
+        ) {
+          setError(
+            "Sản phẩm bàn giao phải từ 20 đến 500 kí tự gói " + (index + 1)
+          );
+          return false;
+        } else if (p.deliveryTime == "") {
+          setError("Chưa nhập số ngày bàn giao gói " + (index + 1));
+          return false;
+        } else if (p.price == "") {
+          setError("Chưa nhập chi phí bàn giao gói " + (index + 1));
+          return false;
+        } else if (p.contractCancelFee == "") {
+          setError("Chưa nhập phí hủy bàn giao gói " + (index + 1));
+          return false;
+        } else if (index == packages.length - 1) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
+      });
+
+      console.log("check", check);
+    }
+
+    if (activeStep == 2) {
+      // if (title1 == "") {
+      //   setError("Chưa nhập tiêu đề!");
+      // } else if (description1 == "") {
+      //   setError("Chưa nhập sản phẩm bàn giao!");
+      // } else if (subCateId == "") {
+      //   setError("Chưa chọn danh mục!");
+      // } else {
+      //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      //   setError("");
+      // }
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setError("");
+    }
+  };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -239,51 +402,96 @@ export default function SellerCreateService() {
     setActiveStep(0);
   };
 
-  const handleView = () => {
-    navigate("/sellerHome/serviceDetail");
-  };
-  const [title, setTitle] = useState("");
-  const [packages, setPackages] = useState([
-    {
-      title: "Noi Dung 1",
-      shortDescription: "Mo ta Ngan 1",
-      deliveryTime: "3",
-      price: "3.12",
-    },
-    {
-      title: "Noi Dung 2",
-      shortDescription: "Mo ta Ngan 2",
-      deliveryTime: "2",
-      price: "4",
-    },
-    {
-      title: "Noi Dung 3",
-      shortDescription: "Mo ta Ngan 3",
-      deliveryTime: "1",
-      price: "5",
-    },
-  ]);
   const dispath = useDispatch();
 
   const handleCreateActive = (e) => {
     e.preventDefault();
-    dispath(addService(service));
+    const newService = {
+      title: title,
+      description: description,
+      impression: 2,
+      interesting: 2,
+      status: "ACTIVE",
+      subCategory: {
+        id: subCateId,
+      },
+      gallery: {
+        imageGallery1: galley1,
+      },
+      packages: packages,
+    };
+    console.log("new service ", newService);
+    dispath(addService(newService))
+      .unwrap()
+      .then(() => {
+        setSuccess("add service successfull");
+        console.log("add service successfull");
+        dispath(fetchServices());
+      })
+      .catch(() => {
+        setError("add service fail");
+        console.log("add service fail");
+      });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-  const handleCreateDeactive = async (e) => {
+  const handleCreateDeactive = (e) => {
     e.preventDefault();
-    setService((preState) => ({
-      ...preState,
+    const newService = {
+      title: title,
+      description: description,
+      impression: 2,
+      interesting: 2,
       status: "DEACTIVE",
-    }));
+      subCategory: {
+        id: subCateId,
+      },
+      gallery: {
+        imageGallery1: galley1,
+      },
+      packages: packages,
+    };
+    console.log("new service ", newService);
+    dispath(addService(newService))
+      .unwrap()
+      .then(() => {
+        console.log("add service successfull");
+        dispath(fetchServices());
+      })
+      .catch(() => {
+        console.log("add service fail");
+      });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-  useEffect(() => {
-    if (service.status === "DEACTIVE") dispath(addService(service));
-  }, [service]);
-  console.log("title", title);
-  console.log("package", packages);
-  console.log("service", service);
+  const handleUpdateService = (e) => {
+    e.preventDefault();
+    const newService = {
+      title: title,
+      description: description,
+      impression: 2,
+      interesting: 2,
+      subCategory: {
+        id: subCateId,
+      },
+      gallery: {
+        imageGallery1: galley1,
+      },
+    };
+    const obj = { service: newService, serviceId };
+    dispath(updateService(obj))
+      .unwrap()
+      .then(() => {
+        console.log("add service successfull");
+        dispath(fetchServices());
+      })
+      .catch(() => {
+        console.log("add service fail");
+      });
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+  const handleView = () => {
+    navigate("/sellerHome/serviceDetail/" + newServiceId);
+  };
+
   return (
     <div className="sellerHome">
       <SellerHeader />
@@ -307,6 +515,8 @@ export default function SellerCreateService() {
             <Button onClick={handleView} className={classes.button}>
               Xem chi tiết dịch vụ
             </Button>
+            {error !== "" && <Alert severity="error">{error}</Alert>}
+            {success !== "" && <Alert severity="success">{success}</Alert>}
           </div>
         ) : (
           <div>
@@ -323,22 +533,36 @@ export default function SellerCreateService() {
               </Button>
               {activeStep === steps.length - 1 ? (
                 <>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleCreateActive}
-                    className={classes.button}
-                  >
-                    Tạo mới và mở
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleCreateDeactive}
-                    className={classes.button}
-                  >
-                    Tạo mới và tạm dừng
-                  </Button>
+                  {serviceId ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleUpdateService}
+                      className={classes.button}
+                    >
+                      Cập nhật
+                    </Button>
+                  ) : (
+                    <>
+                      {" "}
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleCreateDeactive}
+                        className={classes.button}
+                      >
+                        Tạo mới và tạm dừng
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleCreateActive}
+                        className={classes.button}
+                      >
+                        Tạo mới và mở
+                      </Button>{" "}
+                    </>
+                  )}
                 </>
               ) : (
                 <Button
@@ -350,6 +574,8 @@ export default function SellerCreateService() {
                   Tiếp tục
                 </Button>
               )}
+              {error !== "" && <Alert severity="error">{error}</Alert>}
+              {success !== "" && <Alert severity="success">{success}</Alert>}
             </div>
           </div>
         )}

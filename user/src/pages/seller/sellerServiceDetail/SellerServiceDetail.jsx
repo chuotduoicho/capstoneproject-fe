@@ -12,6 +12,13 @@ import Box from "@material-ui/core/Box";
 import { Button, ButtonGroup } from "@material-ui/core";
 import { Divider, Avatar, Grid, Paper } from "@material-ui/core";
 import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchServices,
+  selectServiceById,
+  updateService,
+} from "../../../redux/serviceSlice";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,12 +53,53 @@ function a11yProps(index) {
   };
 }
 export default function SellerServiceDetail() {
+  const { serviceId } = useParams();
+  const serviceDetail = useSelector((state) =>
+    selectServiceById(state, serviceId)
+  );
+  console.log("service", serviceDetail);
   const theme = useTheme();
   const [value, setValue] = useState(0);
 
   const [selected, setSelected] = useState(false);
 
   console.log(selected);
+  const dispatch = useDispatch();
+  const handlePauseService = () => {
+    const service = {
+      title: serviceDetail.title,
+      description: serviceDetail.description,
+      status: "DEACTIVE",
+    };
+    const obj = { service, serviceId };
+    dispatch(updateService(obj))
+      .unwrap()
+      .then(() => {
+        // console.log("add service successfull");
+        dispatch(fetchServices());
+      })
+      .catch(() => {
+        console.log("update service fail");
+      });
+  };
+  const handleOpenService = () => {
+    const service = {
+      title: serviceDetail.title,
+      description: serviceDetail.description,
+      status: "ACTIVE",
+    };
+    const obj = { service, serviceId };
+    console.log(obj);
+    dispatch(updateService(obj))
+      .unwrap()
+      .then(() => {
+        // console.log("add service successfull");
+        dispatch(fetchServices());
+      })
+      .catch(() => {
+        console.log("update service fail");
+      });
+  };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -59,36 +107,42 @@ export default function SellerServiceDetail() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-
+  const navigate = useNavigate();
+  const packages = [...serviceDetail.packages].sort(
+    (a, b) => a.price - b.price
+  );
   return (
     <div className="service_detail">
       <SellerHeader />
       <div className="service_detail2">
         <div className="detail_left">
-          <h2>
-            Title Title Title Title TitleTitleTitle Title TitleTitleTitleTitle
-            Title
-          </h2>
+          <h2>{serviceDetail.title}</h2>
           <div className="seller_header">
             <img
-              src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+              src={
+                serviceDetail.avatar
+                  ? serviceDetail.avatar
+                  : "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png"
+              }
               alt=""
               className="avatar"
             />
-            <p>Nguyen The Vinh | Level 2 Seller | 9⭐</p>
+            <p>
+              {serviceDetail.firstName} {serviceDetail.lastName} |{" "}
+              {serviceDetail.rankSeller} | Tổng số đơn:{" "}
+              {serviceDetail.totalOrder}
+            </p>
           </div>
           <img
-            src="https://elements-video-cover-images-0.imgix.net/files/127924249/previewimg.jpg?auto=compress&crop=edges&fit=crop&fm=jpeg&h=800&w=1200&s=13978d17ddbcd5bafe3a492797e90465"
+            src={
+              serviceDetail.gallery.imageGallery1
+                ? serviceDetail.gallery.imageGallery1
+                : "https://elements-video-cover-images-0.imgix.net/files/127924249/previewimg.jpg?auto=compress&crop=edges&fit=crop&fm=jpeg&h=800&w=1200&s=13978d17ddbcd5bafe3a492797e90465"
+            }
             alt=""
           ></img>
           <h2>Mô tả</h2>
-          <p>
-            Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô
-            tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-            Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô
-            tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả
-            Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả Mô tả{" "}
-          </p>
+          <p>{serviceDetail.description}</p>
           <h2>Bình luận && đánh giá</h2>
           <Paper style={{ padding: "40px 20px", marginBottom: "30px" }}>
             <Grid container wrap="nowrap" spacing={2}>
@@ -154,8 +208,26 @@ export default function SellerServiceDetail() {
             aria-label="outlined primary button group"
             style={{ float: "right", marginBottom: "20px" }}
           >
-            <Button>Sửa</Button>
-            <Button>Tạm dừng</Button>
+            <Button
+              onClick={() => navigate("/sellerHome/updateService/" + serviceId)}
+            >
+              Sửa
+            </Button>
+            {serviceDetail.status === "ACTIVE" ? (
+              <Button
+                onClick={handlePauseService}
+                style={{ backgroundColor: "yellow" }}
+              >
+                Tạm dừng
+              </Button>
+            ) : (
+              <Button
+                onClick={handleOpenService}
+                style={{ backgroundColor: "yellowgreen" }}
+              >
+                Mở
+              </Button>
+            )}
           </ButtonGroup>
           <AppBar position="static" color="default">
             <Tabs
@@ -177,33 +249,24 @@ export default function SellerServiceDetail() {
             onChangeIndex={handleChangeIndex}
             style={{ border: "2px groove #d8d0d2" }}
           >
-            <TabPanel value={value} index={0} dir={theme.direction}>
-              <h1>5$</h1>
-              <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                Astra Pro + Elementor Pro ( Licensed 1 Website )
-              </p>
-              <h4>⏲️ 1 Day Delivery</h4>
-              <p>✔️ Theme Installation</p>
-              <p>✔️ 2 Plugins/Extensions</p>
-            </TabPanel>
-            <TabPanel value={value} index={1} dir={theme.direction}>
-              <h1>10$</h1>
-              <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                Astra Pro + Elementor Pro ( Licensed 1 Website )
-              </p>
-              <h4>⏲️ 1 Day Delivery</h4>
-              <p>✔️ Theme Installation</p>
-              <p>✔️ 2 Plugins/Extensions</p>
-            </TabPanel>
-            <TabPanel value={value} index={2} dir={theme.direction}>
-              <h1>20$</h1>
-              <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                Astra Pro + Elementor Pro ( Licensed 1 Website )
-              </p>
-              <h4>⏲️ 1 Day Delivery</h4>
-              <p>✔️ Theme Installation</p>
-              <p>✔️ 2 Plugins/Extensions</p>
-            </TabPanel>
+            {packages.map((item, index) => {
+              return (
+                <TabPanel value={value} index={index} dir={theme.direction}>
+                  <div style={{ display: "flex" }}>
+                    <h1>{item.price}$ </h1>
+                  </div>
+                  <p style={{ marginTop: "15px", marginBottom: "15px" }}>
+                    {item.title}
+                  </p>
+                  <h4>⏲️ {item.deliveryTime} Day Delivery</h4>
+                  <p>✔️ {item.shortDescription}</p>
+                  {/* <p>✔️ Sản phẩm bàn giao 2</p> */}
+                  <h3>
+                    Phí hủy hợp đồng :{item.contractCancelFee}% Tổng chi phí
+                  </h3>
+                </TabPanel>
+              );
+            })}
           </SwipeableViews>
         </div>
       </div>

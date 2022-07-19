@@ -1,9 +1,5 @@
 import "./buyerHeader.scss";
-import {
-  SearchOutlined,
-  NotificationImportantOutlined,
-  ChatBubbleOutline,
-} from "@material-ui/icons";
+import { SearchOutlined } from "@material-ui/icons";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
 import Paper from "@material-ui/core/Paper";
@@ -15,15 +11,24 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { logout } from "../../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@material-ui/core";
-export default function BuyerHeader() {
+import { selectCurrentUser } from "../../../redux/userSlice";
+export default function BuyerHeader({ search }) {
+  const currentUser = useSelector(selectCurrentUser);
   const [open, setOpen] = useState(false);
+
   const anchorRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
-
+  const handleJoinSeller = () => {
+    if (currentUser.joinSellingAt) {
+      navigate("/sellerHome");
+    } else {
+      navigate("/sellerHome/sellerTerms");
+    }
+  };
   const logOut = useCallback(() => {
     dispatch(logout());
   }, [dispatch]);
@@ -65,21 +70,12 @@ export default function BuyerHeader() {
               type="text"
               placeholder="Tìm kiếm theo dịch vụ ..."
               className="search_text"
+              onChange={(e) => search(e.target.value)}
             />
-            <Link to="#" style={{ textDecoration: "none" }}>
-              <SearchOutlined className="search_icon" />
-            </Link>
+            <SearchOutlined className="search_icon" />
           </div>
         </div>
         <div className="right">
-          <div className="item">
-            <NotificationImportantOutlined className="icon" />
-            <div className="counter">1</div>
-          </div>
-          <div className="item">
-            <ChatBubbleOutline className="icon" />
-            <div className="counter">2</div>
-          </div>
           <Button
             ref={anchorRef}
             aria-controls={open ? "menu-list-grow" : undefined}
@@ -87,6 +83,7 @@ export default function BuyerHeader() {
             onClick={handleToggle}
             className="item"
           >
+            {/* Xin chào, {currentUser.username} */}
             <img
               src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
               alt=""
@@ -124,19 +121,47 @@ export default function BuyerHeader() {
                           Thông tin cá nhân
                         </MenuItem>
                       </Link>
-                      <Link to="/sellerHome" style={{ textDecoration: "none" }}>
-                        <MenuItem style={{ color: "black" }}>
-                          Trở thành người bán
-                        </MenuItem>
-                      </Link>
+
+                      <MenuItem
+                        style={{ color: "black" }}
+                        onClick={handleJoinSeller}
+                      >
+                        Trở thành người bán
+                      </MenuItem>
+
                       <Link
-                        to="/buyerhome/offers"
+                        to="/buyerhome/createRequest"
                         style={{ textDecoration: "none" }}
                       >
                         <MenuItem style={{ color: "black" }}>
-                          Quản lí offer
+                          Tạo yêu cầu
                         </MenuItem>
                       </Link>
+                      <Link
+                        to="/buyerhome/manageRequest"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <MenuItem style={{ color: "black" }}>
+                          Quản lí yêu cầu
+                        </MenuItem>
+                      </Link>
+                      <Link
+                        to="/buyerhome/manageOrder"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <MenuItem style={{ color: "black" }}>
+                          Quản lí đặt hàng
+                        </MenuItem>
+                      </Link>
+                      <Link
+                        to="/buyerhome/manageContract"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <MenuItem style={{ color: "black" }}>
+                          Quản lí hợp đồng
+                        </MenuItem>
+                      </Link>
+
                       <Link
                         to="/buyerhome/wallet"
                         style={{ textDecoration: "none" }}

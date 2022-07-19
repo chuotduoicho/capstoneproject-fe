@@ -7,17 +7,22 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectAllCategories } from "../../../../redux/categorySlice";
 
-export default function Overview({ title }) {
-  const [value, setValue] = useState("female");
-  const [age, setAge] = useState("");
-
-  const handleChangeCountry = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
+export default function Overview({
+  title,
+  description,
+  subCateId,
+  titleDf,
+  descriptionDf,
+  subCateIdDf,
+}) {
+  const category = useSelector(selectAllCategories);
+  const [cate, setCate] = useState(category[0]);
+  console.log("title", titleDf);
+  console.log("description", descriptionDf);
+  console.log("subCateId", subCateIdDf);
   return (
     <div>
       <form
@@ -45,7 +50,8 @@ export default function Overview({ title }) {
           }}
           variant="outlined"
           label="Tiêu đề"
-          onChange={(e) => title(e.target.value)}
+          defaultValue={titleDf}
+          onChange={title}
           required
         />
         <TextField
@@ -53,8 +59,12 @@ export default function Overview({ title }) {
             marginBottom: "10px",
           }}
           variant="outlined"
-          label="Thẻ"
-          required
+          // size="small"
+          defaultValue={descriptionDf}
+          label="Mô tả"
+          multiline
+          rows={5}
+          onChange={description}
         />
         <FormControl
           fullWidth
@@ -66,13 +76,13 @@ export default function Overview({ title }) {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
-            label="Age"
-            onChange={handleChangeCountry}
+            value={cate}
+            label="Danh mục"
+            onChange={(e) => setCate(e.target.value)}
           >
-            <MenuItem value={10}>Hà Nội</MenuItem>
-            <MenuItem value={20}>Hải Phòng</MenuItem>
-            <MenuItem value={30}>Quảng Ninh</MenuItem>
+            {category.map((item) => (
+              <MenuItem value={item}>{item.name}</MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FormControl
@@ -85,32 +95,13 @@ export default function Overview({ title }) {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
-            label="Age"
-            onChange={handleChangeCountry}
+            defaultValue={subCateIdDf}
+            label="Danh mục con"
+            onChange={subCateId}
           >
-            <MenuItem value={10}>Hà Nội</MenuItem>
-            <MenuItem value={20}>Hải Phòng</MenuItem>
-            <MenuItem value={30}>Quảng Ninh</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl
-          fullWidth
-          style={{
-            marginBottom: "10px",
-          }}
-        >
-          <InputLabel id="demo-simple-select-label">Kiểu </InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={age}
-            label="Age"
-            onChange={handleChangeCountry}
-          >
-            <MenuItem value={10}>Hà Nội</MenuItem>
-            <MenuItem value={20}>Hải Phòng</MenuItem>
-            <MenuItem value={30}>Quảng Ninh</MenuItem>
+            {cate.subCategories.map((item) => (
+              <MenuItem value={item.id}>{item.name}</MenuItem>
+            ))}
           </Select>
         </FormControl>
       </form>

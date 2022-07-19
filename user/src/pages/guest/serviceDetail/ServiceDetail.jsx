@@ -23,14 +23,9 @@ import {
 } from "@material-ui/core";
 import { Divider, Avatar, Grid, Paper } from "@material-ui/core";
 import Topbar from "../../../components/guest/topbar/Topbar";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchServiceDetail,
-  selectServiceDetail,
-  selectServiceStatus,
-} from "../../../redux/serviceSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectServiceById } from "../../../redux/serviceSlice";
 const style = {
   position: "absolute",
   top: "50%",
@@ -77,16 +72,15 @@ function a11yProps(index) {
   };
 }
 
-export default function ServiceDetail() {
-  const serviceDetail = useSelector(selectServiceDetail);
+const ServiceDetail = () => {
   const theme = useTheme();
   const [value, setValue] = useState(0);
-  const [numberStage, setNumberStage] = useState(0);
-  const [arr, setArr] = useState([]);
-  const [selected, setSelected] = useState("false");
-  const handleChangeSelect = (ev) => {
-    setSelected(ev.target.value);
-  };
+  const { serviceId } = useParams();
+  const navigate = useNavigate();
+  const serviceDetail = useSelector((state) =>
+    selectServiceById(state, serviceId)
+  );
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -94,16 +88,12 @@ export default function ServiceDetail() {
   const handleChangeIndex = (index) => {
     setValue(index);
   };
-
+  const [amount, setAmount] = useState(1);
   //modal
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  console.log("ssd", serviceDetail.packages);
   const packages = [...serviceDetail.packages].sort(
     (a, b) => a.price - b.price
   );
-  console.log(serviceDetail);
+  console.log("service", serviceDetail);
   return (
     <div className="service_detail">
       <Topbar />
@@ -111,17 +101,29 @@ export default function ServiceDetail() {
       <div className="sections">
         <div className="service_detail">
           <div className="detail_left">
-            <h2>{serviceDetail.description}</h2>
+            <h2>{serviceDetail.title}</h2>
             <div className="seller_header">
               <img
-                src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                alt=""
+                src={
+                  serviceDetail.avatar
+                    ? serviceDetail.avatar
+                    : "https://cdn1.iconfinder.com/data/icons/user-pictures/100/unknown-512.png"
+                }
+                alt="avatar"
                 className="avatar"
               />
-              <p>Nguyen The Vinh | Level 2 Seller | 9⭐</p>
+              <p>
+                {serviceDetail.firstName}&nbsp;
+                {serviceDetail.lastName} | {serviceDetail.rankSeller} | Tổng số
+                đơn: {serviceDetail.totalOrder}
+              </p>
             </div>
             <img
-              src="https://elements-video-cover-images-0.imgix.net/files/127924249/previewimg.jpg?auto=compress&crop=edges&fit=crop&fm=jpeg&h=800&w=1200&s=13978d17ddbcd5bafe3a492797e90465"
+              src={
+                serviceDetail.gallery.imageGallery1
+                  ? serviceDetail.gallery.imageGallery1
+                  : "https://elements-video-cover-images-0.imgix.net/files/127924249/previewimg.jpg?auto=compress&crop=edges&fit=crop&fm=jpeg&h=800&w=1200&s=13978d17ddbcd5bafe3a492797e90465"
+              }
               alt=""
             ></img>
             <h2>Mô tả</h2>
@@ -200,7 +202,7 @@ export default function ServiceDetail() {
                 <Tab label="Cơ bản" {...a11yProps(0)} />
                 <Tab label="Nâng cao" {...a11yProps(1)} />
                 <Tab label="Cao cấp" {...a11yProps(2)} />
-                <Tab label="Tùy chọn" {...a11yProps(3)} />
+                {/* <Tab label="Tùy chọn" {...a11yProps(3)} /> */}
               </Tabs>
             </AppBar>
             <SwipeableViews
@@ -209,229 +211,55 @@ export default function ServiceDetail() {
               onChangeIndex={handleChangeIndex}
               style={{ border: "2px groove #d8d0d2" }}
             >
-              <TabPanel value={value} index={0} dir={theme.direction}>
-                <h1>{packages[0].price}$</h1>
-                <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  {packages[0].shortDescription}
-                </p>
-                <h4>⏲️ {packages[0].deliveryTime} Day Delivery</h4>
-                {/* <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p> */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "15px",
-                    marginLeft: "180px",
-                  }}
-                >
-                  Mua
-                </Button>
-              </TabPanel>
-              <TabPanel value={value} index={1} dir={theme.direction}>
-                <h1>{packages[1].price}$</h1>
-                <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  {packages[1].shortDescription}
-                </p>
-                <h4>⏲️ {packages[1].deliveryTime} Day Delivery</h4>
-                {/* <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p> */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "15px",
-                    marginLeft: "180px",
-                  }}
-                >
-                  Mua
-                </Button>
-              </TabPanel>
-              <TabPanel value={value} index={2} dir={theme.direction}>
-                <h1>{packages[2].price}$</h1>
-                <p style={{ marginTop: "15px", marginBottom: "15px" }}>
-                  {packages[2].shortDescription}
-                </p>
-                <h4>⏲️ {packages[2].deliveryTime} Day Delivery</h4>
-                {/* <p>✔️ Theme Installation</p>
-                <p>✔️ 2 Plugins/Extensions</p> */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "15px",
-                    marginLeft: "180px",
-                  }}
-                >
-                  Mua
-                </Button>
-              </TabPanel>
-              <TabPanel value={value} index={3} dir={theme.direction}>
-                <FormControl>
-                  <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="false"
-                    name="radio-buttons-group"
-                    onChange={handleChangeSelect}
-                  >
-                    <FormControlLabel
-                      value="false"
-                      control={<Radio />}
-                      label="Tùy chọn KHÔNG chia giai đoạn bàn giao"
-                    />
-                    <FormControlLabel
-                      value="true"
-                      control={<Radio />}
-                      label="Tùy chọn CÓ chia giai đoạn bàn giao"
-                    />
-                  </RadioGroup>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{
-                      marginTop: "15px",
-                      marginBottom: "15px",
-                      marginLeft: "180px",
-                    }}
-                    onClick={handleOpen}
-                  >
-                    Tiếp tục
-                  </Button>
-                </FormControl>
-                <Modal
-                  keepMounted
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="keep-mounted-modal-title"
-                  aria-describedby="keep-mounted-modal-description"
-                >
-                  <Box sx={style}>
-                    {selected === "false" ? (
-                      <>
-                        {" "}
-                        <Typography
-                          id="keep-mounted-modal-title"
-                          variant="h6"
-                          component="h2"
-                          style={{ marginBottom: "15px" }}
-                        >
-                          Tùy chọn gói dịch vụ
-                        </Typography>
-                        <TextField
-                          id="outlined-basic"
-                          label="Sản phẩm bàn giao"
-                          variant="outlined"
-                          style={{ marginBottom: "15px" }}
-                        />
-                        <TextField
-                          id="outlined-basic"
-                          label="Ngày Giao"
-                          variant="outlined"
-                          InputLabelProps={{ shrink: true }}
-                          type="date"
-                          style={{ marginBottom: "15px" }}
-                        />
-                        <TextField
-                          id="outlined-basic"
-                          label="Giá"
-                          variant="outlined"
-                          type="number"
-                          style={{ marginBottom: "15px" }}
-                        />
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          style={{
-                            marginTop: "15px",
-                            marginBottom: "15px",
-                          }}
-                        >
-                          Xác nhận
-                        </Button>{" "}
-                      </>
-                    ) : (
-                      <>
-                        <Typography
-                          id="keep-mounted-modal-title"
-                          variant="h6"
-                          component="h2"
-                          style={{ marginBottom: "15px" }}
-                        >
-                          Tùy chọn chia giai đoạn
-                        </Typography>
-                        <FormControl
-                          fullWidth
-                          style={{
-                            marginBottom: "10px",
-                          }}
-                        >
-                          <InputLabel id="demo-simple-select-label">
-                            Chọn số giai Đoạn
-                          </InputLabel>
-                          <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={numberStage}
-                            label="Chọn số giai đoạn"
-                            onChange={(e) => (
-                              setNumberStage(e.target.value),
-                              (arr.length = e.target.value),
-                              arr.fill(0),
-                              setArr(arr)
-                            )}
-                          >
-                            <MenuItem value={2}>2 giai đoạn</MenuItem>
-                            <MenuItem value={3}>3 giai đoạn</MenuItem>
-                            <MenuItem value={4}>4 giai đoạn</MenuItem>
-                            <MenuItem value={5}>5 giai đoạn</MenuItem>
-                          </Select>
-                        </FormControl>
-                        {arr.map((value, index) => (
-                          <>
-                            <label>Giai đoạn {index + 1}</label>
-                            <div style={{ display: "flex" }}>
-                              <TextField
-                                id="outlined-basic"
-                                label="Sản phẩm bàn giao"
-                                variant="outlined"
-                                style={{ marginBottom: "15px" }}
-                              />
-                              <TextField
-                                id="outlined-basic"
-                                label="Ngày Giao"
-                                variant="outlined"
-                                InputLabelProps={{ shrink: true }}
-                                type="date"
-                                style={{ marginBottom: "15px" }}
-                              />
-                              <TextField
-                                id="outlined-basic"
-                                label="Giá"
-                                variant="outlined"
-                                type="number"
-                                style={{ marginBottom: "15px" }}
-                              />
-                            </div>
-                          </>
-                        ))}
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          style={{
-                            marginTop: "15px",
-                            marginBottom: "15px",
-                          }}
-                        >
-                          Xác nhận
-                        </Button>{" "}
-                      </>
-                    )}
-                  </Box>
-                </Modal>
-              </TabPanel>
+              {packages.map((item, index) => {
+                return (
+                  <TabPanel value={value} index={index} dir={theme.direction}>
+                    <div style={{ display: "flex" }}>
+                      <h1>{item.price}$ </h1>
+                      <Typography
+                        variant="h6"
+                        style={{ margin: "10px", marginLeft: "100px" }}
+                      >
+                        Số lượng:
+                      </Typography>
+
+                      <TextField
+                        id="outlined-basic"
+                        variant="standard"
+                        type="number"
+                        defaultValue={amount}
+                        inputProps={{ min: 1 }}
+                        style={{ width: "50px", marginTop: "10px" }}
+                        onChange={(e) => setAmount(e.target.value)}
+                      />
+                    </div>
+                    <p style={{ marginTop: "15px", marginBottom: "15px" }}>
+                      {item.title}
+                    </p>
+                    <h4>⏲️ {item.deliveryTime} Day Delivery</h4>
+                    <p>✔️ {item.shortDescription}</p>
+                    {/* <p>✔️ Sản phẩm bàn giao 2</p> */}
+                    <h3>
+                      Phí hủy hợp đồng :{item.contractCancelFee}% Tổng chi phí
+                    </h3>
+                    <h2>Tổng giá :{item.price * amount}$</h2>
+                    {/* <Button
+                      variant="contained"
+                      color="primary"
+                      style={{
+                        marginTop: "15px",
+                        marginBottom: "15px",
+                        marginLeft: "180px",
+                      }}
+                      onClick={(e) => {
+                        navigate("/auth/login");
+                      }}
+                    >
+                      Mua
+                    </Button> */}
+                  </TabPanel>
+                );
+              })}
             </SwipeableViews>
           </div>
         </div>
@@ -439,4 +267,5 @@ export default function ServiceDetail() {
       </div>
     </div>
   );
-}
+};
+export default ServiceDetail;

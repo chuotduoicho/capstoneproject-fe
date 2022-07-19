@@ -1,17 +1,18 @@
 import "./setNewPassword.scss";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, TextField } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import { clearMessage } from "../../../../redux/message";
 import Link from "@material-ui/core/Link";
-import Alert from "@material-ui/lab/Alert";
+import { resetPassword } from "../../../../redux/authSlice";
 const SetNewPassword = () => {
   const [successful, setSuccessful] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const { message } = useSelector((state) => state.message);
-  const navigate = useNavigate();
+  const { capcha } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearMessage());
@@ -19,18 +20,23 @@ const SetNewPassword = () => {
 
   const handleSetNewPassword = (e) => {
     e.preventDefault();
-    navigate("/auth/login");
-    // console.log("user name password: ", { username, password });
-    // dispatch(login({ username, password }))
-    //   .unwrap()
-    //   .then(() => {
-    //     setSuccessful(true);
-    //     navigate("/buyerhome");
-    //     window.location.reload();
-    //   })
-    //   .catch(() => {
-    //     setSuccessful(false);
-    //   });
+    setSuccessful(false);
+    setError("");
+    console.log({ capcha, password });
+    if (password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 kí tự!");
+    } else if (confirmPassword != password) {
+      setError("Xác nhận mật khẩu phải trùng với mật khẩu!");
+    } else {
+      dispatch(resetPassword({ capcha, password }))
+        .unwrap()
+        .then(() => {
+          setSuccessful(true);
+        })
+        .catch(() => {
+          setSuccessful(false);
+        });
+    }
   };
   return (
     <div className="login">
@@ -44,7 +50,7 @@ const SetNewPassword = () => {
           className="input"
           variant="outlined"
           type="password"
-          label="Mật khẩu"
+          label="Mật khẩu mới"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -52,16 +58,16 @@ const SetNewPassword = () => {
           className="input"
           variant="outlined"
           type="password"
-          label="Mật khẩu"
+          label="Xác nhận mật khẩu"
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <span className="link">Ít nhất 1 kí tự viết thường</span>
+        {/* <span className="link">Ít nhất 1 kí tự viết thường</span>
         <span className="link">Ít nhất 1 kí tự viết hoa</span>
         <span className="link">8 đến 16 kí tự</span>
         <span className="link">
           Chỉ chữ cái , số và kí tự phổ biến thông thường
-        </span>
+        </span> */}
         <Button
           variant="outlined"
           className="btn"
@@ -70,13 +76,25 @@ const SetNewPassword = () => {
         >
           Xác nhận
         </Button>
-
+        <span className="link">
+          <Link href="/auth/login" color="#5327ef">
+            ◀️ Quay về đăng nhập
+          </Link>
+        </span>
         {message && (
           <div
             className={successful ? "login_success" : "login_error"}
             role="alert"
           >
-            "Tên đăng nhập hoặc mật khẩu không đúng!"
+            {message}
+          </div>
+        )}
+        {error != "" && (
+          <div
+            className={successful ? "login_success" : "login_error"}
+            role="alert"
+          >
+            {error}
           </div>
         )}
       </form>
