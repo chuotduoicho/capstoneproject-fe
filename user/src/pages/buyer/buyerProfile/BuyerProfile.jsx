@@ -5,6 +5,10 @@ import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
 import {
   Avatar,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Container,
   FormControl,
   FormControlLabel,
@@ -19,6 +23,7 @@ import {
   changePassword,
   selectCurrentUser,
   updateUserProfile,
+  uploadFile,
 } from "../../../redux/userSlice";
 import { clearMessage } from "../../../redux/message";
 function format(date) {
@@ -40,22 +45,47 @@ export default function BuyerProfile() {
   const [phone, setPhone] = useState(currentUser.phoneNumber);
   const [address, setAddress] = useState(currentUser.country);
   const [city, setCity] = useState(currentUser.city);
+  const [avatar, setAvatar] = useState(currentUser.avatar);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [file, setFile] = useState(null);
   const { message } = useSelector((state) => state.message);
+  const { url } = useSelector((state) => state.url);
   const [error, setError] = useState("");
   const [isChange, setIsChange] = useState(true);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearMessage());
-  }, [dispatch]);
+    if (url) setAvatar(url);
+  }, [dispatch, url]);
+  const handleUploadFile = async (e) => {
+    setFile(e.target.files[0]);
+    const formData = new FormData();
+    console.log(file);
+    formData.append("file", e.target.files[0]);
+    formData.append("id", currentUser.id);
+    formData.append("type", "AVATAR");
+    dispatch(uploadFile(formData))
+      .unwrap()
+      .then(() => {
+        setSuccessful(true);
+        setIsChange(false);
+        setError("Cập nhật thông tin thành công!");
+      })
+      .catch(() => {
+        setSuccessful(false);
+      });
+  };
   const handleUpdate = () => {
     const id = currentUser.id;
     setSuccessful(false);
+    console.log(avatar);
     setError("");
-    if (!/^[0-9]\d{9}$/.test(phone)) {
-      setError("Số điện thoại phải có độ dài 10 số!");
+    if (!/((09|03|07|08|05)+([0-9]{8})\b)/.test(phone)) {
+      setError(
+        "Số điện thoại phải có độ dài 10 số và bắt đầu bằng 09,03,07,08,05!"
+      );
     } else {
       dispatch(
         updateUserProfile({
@@ -67,6 +97,7 @@ export default function BuyerProfile() {
           phone,
           address,
           city,
+          avatar,
         })
       )
         .unwrap()
@@ -76,7 +107,6 @@ export default function BuyerProfile() {
         })
         .catch(() => {
           setSuccessful(false);
-          <Alert severity="error">Cập nhật thất bại!</Alert>;
         });
     }
   };
@@ -92,6 +122,7 @@ export default function BuyerProfile() {
       dispatch(changePassword({ oldPassword, newPassword, confirmPassword }))
         .unwrap()
         .then(() => {
+          setOpen(false);
           setSuccessful(true);
         })
         .catch(() => {
@@ -107,7 +138,6 @@ export default function BuyerProfile() {
   const handleClose = () => {
     setOpen(false);
   };
-  console.log(format(currentUser.birthDate));
   return (
     <div className="buyer_profile">
       <BuyerHeader />
@@ -118,13 +148,14 @@ export default function BuyerProfile() {
             <Avatar
               className="image"
               alt="Remy Sharp"
-              src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+              src={file ? URL.createObjectURL(file) : avatar}
             />
             <TextField
               required
               id="standard-required"
               className="text_field"
               type="file"
+              onChange={handleUploadFile}
             />
           </div>
           <div className="form_right">
@@ -285,47 +316,6 @@ export default function BuyerProfile() {
                 Đổi mật khẩu
               </Button>
             </div>
-
-            {open ? (
-              <div className="form_right_row">
-                {" "}
-                <TextField
-                  className="input"
-                  variant="outlined"
-                  type="password"
-                  label="Mật khẩu cũ"
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  required
-                />
-                <TextField
-                  className="input"
-                  variant="outlined"
-                  type="password"
-                  label="Mật khẩu mới"
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-                <TextField
-                  className="input"
-                  variant="outlined"
-                  type="password"
-                  label="Xác nhận mật khẩu"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-                <Button
-                  variant="contained"
-                  className="btn"
-                  color="primary"
-                  style={{ height: "55px" }}
-                  onClick={handleChangePassword}
-                >
-                  Xác nhận
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
             <div className="form_right_row">
               {message && (
                 <div
@@ -345,6 +335,54 @@ export default function BuyerProfile() {
               )}
             </div>
           </div>
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="max-width-dialog-title"
+          >
+            <DialogTitle id="max-width-dialog-title">Đổi mật khẩu</DialogTitle>
+            <DialogContent style={{ display: "flex", flexDirection: "column" }}>
+              {" "}
+              <TextField
+                className="input"
+                variant="outlined"
+                type="password"
+                label="Mật khẩu cũ"
+                onChange={(e) => setOldPassword(e.target.value)}
+                required
+              />
+              <TextField
+                className="input"
+                variant="outlined"
+                type="password"
+                label="Mật khẩu mới"
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <TextField
+                className="input"
+                variant="outlined"
+                type="password"
+                label="Xác nhận mật khẩu"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={handleChangePassword}
+              >
+                Xác nhận
+              </Button>
+              <Button onClick={() => setOpen(false)} color="primary">
+                Hủy
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Container>
 
         <Contact />

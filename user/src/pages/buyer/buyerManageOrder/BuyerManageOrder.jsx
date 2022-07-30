@@ -28,6 +28,7 @@ import { selectCurrentUser } from "../../../redux/userSlice";
 import {
   fetchContracts,
   selectAllContracts,
+  selectOrders,
 } from "../../../redux/contractSlice";
 
 function descendingComparator(a, b, orderBy) {
@@ -70,17 +71,18 @@ const headCells = [
     label: "Số lượng",
   },
   {
-    id: "contractCancelFee",
-    numeric: true,
-    disablePadding: false,
-    label: "Phí hủy hợp đồng(%)",
-  },
-  {
     id: "totalPrice",
     numeric: true,
     disablePadding: false,
     label: "Tổng chi phí ($)",
   },
+  {
+    id: "contractCancelFee",
+    numeric: true,
+    disablePadding: false,
+    label: "Phí hủy hợp đồng(%)",
+  },
+
   {
     id: "expectCompleteDate",
     numeric: true,
@@ -240,7 +242,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function BuyerManageOrder() {
-  const listContract = useSelector(selectAllContracts);
+  const listContract = useSelector(selectOrders);
   const currentUser = useSelector(selectCurrentUser);
   // const listContract = currentUser.buyer.contracts;
   // console.log("listContract", listContract);
@@ -334,9 +336,11 @@ export default function BuyerManageOrder() {
                         </TableCell>
                         <TableCell align="right">{row.quantity}</TableCell>
                         <TableCell align="right">
+                          {row.totalPrice} $
+                        </TableCell>{" "}
+                        <TableCell align="right">
                           {row.contractCancelFee} %
                         </TableCell>
-                        <TableCell align="right">{row.totalPrice} $</TableCell>
                         <TableCell align="right">
                           {row.expectCompleteDate}
                         </TableCell>{" "}

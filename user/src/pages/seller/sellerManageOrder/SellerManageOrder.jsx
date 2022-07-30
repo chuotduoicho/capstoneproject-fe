@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Contact from "../../../components/guest/contact/Contact";
 import "./sellerManageOrder.scss";
 import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
@@ -23,9 +23,14 @@ import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../redux/userSlice";
 import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
+import {
+  fetchContracts,
+  selectAllContracts,
+  selectOrders,
+} from "../../../redux/contractSlice";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -67,17 +72,18 @@ const headCells = [
     label: "Số lượng",
   },
   {
-    id: "contractCancelFee",
-    numeric: true,
-    disablePadding: false,
-    label: "Phí hủy hợp đồng(%)",
-  },
-  {
     id: "totalPrice",
     numeric: true,
     disablePadding: false,
     label: "Tổng chi phí ($)",
   },
+  {
+    id: "contractCancelFee",
+    numeric: true,
+    disablePadding: false,
+    label: "Phí hủy hợp đồng(%)",
+  },
+
   {
     id: "expectCompleteDate",
     numeric: true,
@@ -238,7 +244,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function SellerManageOrder() {
   const currentUser = useSelector(selectCurrentUser);
-  const listContract = currentUser.seller.contracts;
+  const listContract = useSelector(selectOrders);
   console.log("listContract", listContract);
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
@@ -247,7 +253,10 @@ export default function SellerManageOrder() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchContracts());
+  }, []);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -325,9 +334,11 @@ export default function SellerManageOrder() {
                         </TableCell>
                         <TableCell align="right">{row.quantity}</TableCell>
                         <TableCell align="right">
+                          {row.totalPrice} $
+                        </TableCell>{" "}
+                        <TableCell align="right">
                           {row.contractCancelFee} %
                         </TableCell>
-                        <TableCell align="right">{row.totalPrice} $</TableCell>
                         <TableCell align="right">
                           {row.expectCompleteDate}
                         </TableCell>{" "}

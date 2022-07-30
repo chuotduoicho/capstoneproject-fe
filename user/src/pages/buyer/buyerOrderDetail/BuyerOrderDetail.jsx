@@ -13,7 +13,7 @@ import Contact from "../../../components/guest/contact/Contact";
 import "react-credit-cards/es/styles-compiled.css";
 import "./buyerOrderDetail.scss";
 import { useSelector } from "react-redux";
-import { selectContractBuyerById } from "../../../redux/userSlice";
+import { selectContractBuyerById } from "../../../redux/contractSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import Rating from "@material-ui/lab/Rating";
 import { StarBorder } from "@material-ui/icons";
@@ -24,7 +24,7 @@ export default function BuyerOrderDetail() {
     selectContractBuyerById(state, orderId)
   );
   console.log("contractDetail", contractDetail);
-
+  const navigate = useNavigate();
   return (
     <div className="buyer_profile">
       <BuyerHeader />
@@ -63,6 +63,9 @@ export default function BuyerOrderDetail() {
         </div>{" "}
         <div className="paymentRow">
           <h2>Bình luận: {contractDetail.comments}</h2>
+        </div>{" "}
+        <div className="paymentRow">
+          <Button onClick={() => navigate(-1)}>Quay lại</Button>
         </div>{" "}
       </Container>
       <div className="sections_profile">

@@ -15,7 +15,7 @@ const getServiceById = (serviceId) => {
 };
 const getServiceByCateId = (cateId) => {
   return axios
-    .get(API_URL + "/list-services-by-cate/" + cateId)
+    .get(API_URL + "/list-services-by-cat/" + cateId)
     .then((response) => {
       return response.data;
     });
@@ -39,6 +39,25 @@ const updateService = (obj) => {
       return response.data;
     });
 };
+const updateServicePackage = (obj) => {
+  console.log("package", obj);
+  const service = {
+    title: obj.title,
+    shortDescription: obj.shortDescription,
+    deliveryTime: obj.deliveryTime,
+    price: obj.price,
+    contractCancelFee: obj.contractCancelFee,
+  };
+  const packageId = obj.id;
+  console.log(service, packageId);
+  return axios
+    .put(API_URL + "/package/" + packageId, service, {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
 
 const serviceService = {
   getAllServices,
@@ -46,6 +65,7 @@ const serviceService = {
   addService,
   getServiceByCateId,
   updateService,
+  updateServicePackage,
 };
 
 export default serviceService;

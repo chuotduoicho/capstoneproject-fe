@@ -11,9 +11,20 @@ const addRequest = (request) => {
 };
 const addOffer = (request) => {
   const requestId = request.requestId;
-  const requestobj = request.request;
+  const offerObj = request.offer;
   return axios
-    .post(API_URL + "/send-offer/" + requestId, requestobj, {
+    .post(API_URL + "/send-offer/" + requestId, offerObj, {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+const updateOffer = (obj) => {
+  const offerId = obj.offerId;
+  const offerObj = obj.offer;
+  return axios
+    .put(API_URL + "/updatePostRequest/" + offerId, offerObj, {
       headers: authHeader(),
     })
     .then((response) => {
@@ -40,6 +51,15 @@ const applyRequest = (requestId) => {
       return response.data;
     });
 };
+const applyOffer = (obj) => {
+  return axios
+    .post("http://localhost:8080/api/v1/contract/" + obj, null, {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
 const getAllRequests = () => {
   return axios
     .get(API_URL + "/getAllPostRequest", { headers: authHeader() })
@@ -50,7 +70,9 @@ const getAllRequests = () => {
 };
 const getAllSellerInvite = (requestId) => {
   return axios
-    .get(API_URL + "/getSellerInvite", requestId, { headers: authHeader() })
+    .get(API_URL + "/getListSellerApply/" + requestId, {
+      headers: authHeader(),
+    })
     .then((response) => {
       return response.data;
     });
@@ -72,6 +94,27 @@ const getRequestsOfBuyer = () => {
       return response.data;
     });
 };
+
+const getOffersOfBuyer = (requestId) => {
+  return axios
+    .get("http://localhost:8080/api/v1/users/list-offer/" + requestId, {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
+const getOffersOfSeller = () => {
+  return axios
+    .get("http://localhost:8080/api/v1/seller/list-offer", {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
 const requestService = {
   addRequest,
   addOffer,
@@ -81,6 +124,9 @@ const requestService = {
   getAllRequestsByCate,
   getRequestsOfBuyer,
   getAllSellerInvite,
+  getOffersOfBuyer,
+  getOffersOfSeller,
+  applyOffer,
 };
 
 export default requestService;

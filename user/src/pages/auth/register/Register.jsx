@@ -14,8 +14,10 @@ import React, { useState, useEffect } from "react";
 import Link from "@material-ui/core/Link";
 import { register } from "../../../redux/authSlice";
 import { clearMessage } from "../../../redux/message";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const { user } = useSelector((state) => state.auth);
   const [successful, setSuccessful] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const { message } = useSelector((state) => state.message);
@@ -29,9 +31,10 @@ const Register = () => {
   const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("BUYER");
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(clearMessage());
+    if (user) navigate("/buyerHome");
   }, [dispatch]);
 
   const handleRegister = (e) => {
@@ -94,20 +97,24 @@ const Register = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <TextField
-          className="input"
-          variant="outlined"
-          label="Họ"
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <TextField
-          className="input"
-          variant="outlined"
-          label="Tên"
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
+        <div style={{ display: "flex" }}>
+          <TextField
+            className="input"
+            variant="outlined"
+            label="Họ"
+            onChange={(e) => setFirstName(e.target.value)}
+            style={{ marginRight: "50px" }}
+            required
+          />
+          <TextField
+            className="input"
+            variant="outlined"
+            label="Tên"
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+        </div>
+
         <TextField
           className="input"
           variant="outlined"
@@ -115,27 +122,7 @@ const Register = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <FormControl className="input_role">
-          <FormLabel component="legend">*Chọn vai trò :</FormLabel>
-          <RadioGroup
-            aria-label="gender"
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="input_radio"
-          >
-            <FormControlLabel
-              value="BUYER"
-              control={<Radio />}
-              label="Người mua dịch vụ"
-            />
-            <FormControlLabel
-              value="SELLER"
-              control={<Radio />}
-              label="Người bán dịch vụ"
-            />
-          </RadioGroup>
-        </FormControl>
+
         <Button variant="outlined" className="btn" type="submit">
           Đăng kí
         </Button>

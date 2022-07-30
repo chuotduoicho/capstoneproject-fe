@@ -24,8 +24,11 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectAllRequests } from "../../../redux/requestSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchRequestsSeller,
+  selectAllRequests,
+} from "../../../redux/requestSlice";
 import { selectAllCategories } from "../../../redux/categorySlice";
 import SellerHome from "../sellerHome/SellerHome";
 import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
@@ -77,8 +80,14 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "jobTitle",
+    id: "buyerLastname",
     numeric: false,
+    disablePadding: false,
+    label: "Tên người dùng",
+  },
+  {
+    id: "jobTitle",
+    numeric: true,
     disablePadding: false,
     label: "Tiêu đề",
   },
@@ -321,7 +330,10 @@ export default function SellerManageRequest() {
 
     setSelected(newSelected);
   };
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchRequestsSeller());
+  }, []);
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -377,8 +389,9 @@ export default function SellerManageRequest() {
                           scope="row"
                           // padding="none"
                         >
-                          {row.jobTitle}
+                          {row.buyerFirstName + " " + row.buyerLastname}
                         </TableCell>
+                        <TableCell align="right">{row.jobTitle}</TableCell>
                         <TableCell align="right">
                           {
                             listCategories.find(

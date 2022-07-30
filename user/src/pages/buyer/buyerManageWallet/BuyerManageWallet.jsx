@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Contact from "../../../components/guest/contact/Contact";
-import "./buyerManageContract.scss";
+import "./buyerManageWallet.scss";
 import BuyerHeader from "../../../components/buyer/buyerHeader/BuyerHeader";
 import PropTypes from "prop-types";
 import clsx from "clsx";
@@ -16,21 +16,60 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
+import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Button } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { selectCurrentUser } from "../../../redux/userSlice";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import {
-  fetchContracts,
-  fetchListContracts,
-  selectAllContracts,
-  selectContracts,
-} from "../../../redux/contractSlice";
+  Button,
+  ButtonGroup,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  InputAdornment,
+  TextField,
+} from "@material-ui/core";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { AccountBalanceWallet, ArrowUpward } from "@material-ui/icons";
+import Checkout from "../../../components/payment/Checkout";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchWallet,
+  selectWallet,
+  selectWalletTransactions,
+  topup,
+  topupSuccess,
+} from "../../../redux/userSlice";
+import { clearMessage } from "../../../redux/message";
+function createData(description, subCate, skills, price, cancleFee) {
+  return { description, subCate, skills, price, cancleFee };
+}
+
+const rows = [
+  createData("Mô tả ngắn abcdsssssssssss", "Kinh doanh tự do", "HTML", 67, 4.3),
+  createData("Donut", "Kinh doanh tự dosdsd", "JS", 51, 4.9),
+  createData("Eclair", "Kinh doanh tự dsdsdao", "JS", 24, 6.0),
+  createData("Frozen yoghurt", "Kinh doanh tự áddo", "HTML", 24, 4.0),
+  createData("Gingerbread", "Kinh doanh tựád do", "CSS", 49, 3.9),
+  createData("Honeycomb", "Kinh doanh tự do", "HTML", 87, 6.5),
+  createData("Ice cream ", "Kinh doanh tự do", "JS", 37, 4.3),
+  createData("Jelly Bean", "Kinh doanh tự do", "CSS", 94, 0.0),
+  createData("KitKat", "Kinh doanh tự do", "HTML", 65, 7.0),
+  createData("Lollipop", "Kinh doanh tự do", "HTML", 98, 0.0),
+  createData("Marshmallow", "Kinh doanh tự do", "CSS", 81, 2.0),
+  createData("Nougat", "Kinh doanh tự do", "CSS", 9, 37.0),
+  createData("Oreo", "Kinh doanh tự do", "CSS", 63, 4.0),
+];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -60,51 +99,41 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "contractCode",
+    id: "description",
     numeric: false,
     disablePadding: false,
-    label: "Mã hợp đồng",
+    label: "Id",
   },
   {
-    id: "quantity",
+    id: "subCate",
     numeric: true,
     disablePadding: false,
-    label: "Số lượng",
+    label: "Mã chuyển tiền",
   },
   {
-    id: "contractCancelFee",
+    id: "price",
     numeric: true,
     disablePadding: false,
-    label: "Phí hủy hợp đồng(%)",
+    label: "Nội dung",
   },
   {
-    id: "totalPrice",
+    id: "cancleFee",
     numeric: true,
     disablePadding: false,
-    label: "Tổng chi phí ($)",
-  },
-  {
-    id: "expectCompleteDate",
-    numeric: true,
-    disablePadding: false,
-    label: "Ngày bàn giao(dự kiến)",
-  },
-  {
-    id: "deliveryStatus",
-    numeric: true,
-    disablePadding: false,
-    label: "Trạng thái",
-  },
-  {
-    id: "action",
-    numeric: true,
-    disablePadding: false,
-    label: "",
+    label: "Số tiền giao dịch",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, order, orderBy, onRequestSort } = props;
+  const {
+    classes,
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -171,7 +200,9 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
-
+  const { handleOpenPayment } = props;
+  const { price } = props;
+  const { income } = props;
   return (
     <Toolbar
       className={clsx(classes.root, {
@@ -188,14 +219,25 @@ const EnhancedTableToolbar = (props) => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography
-          className={classes.title}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Danh sách hợp đồng
-        </Typography>
+        <>
+          <Typography
+            className={classes.title}
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            Danh sách giao dịch
+          </Typography>
+          <Typography
+            className={classes.title}
+            variant="h4"
+            id="tableTitle"
+            component="div"
+          >
+            <AccountBalanceWallet />
+            &nbsp; {price} $ <ArrowUpward /> {income} $
+          </Typography>
+        </>
       )}
 
       {numSelected > 0 ? (
@@ -205,8 +247,13 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list"></IconButton>
+        <Tooltip title="với paypal">
+          <IconButton aria-label="filter list">
+            <ButtonGroup variant="outlined" aria-label="outlined button group">
+              <Button onClick={handleOpenPayment}>Nạp tiền</Button>
+              <Button>Rút tiền</Button>
+            </ButtonGroup>
+          </IconButton>
         </Tooltip>
       )}
     </Toolbar>
@@ -241,9 +288,14 @@ const useStyles = makeStyles((theme) => ({
     width: 1,
   },
 }));
-export default function BuyerManageContract() {
-  const currentUser = useSelector(selectCurrentUser);
-  const listContract = useSelector(selectAllContracts);
+export default function BuyerManageWallet() {
+  const wallet = useSelector(selectWallet);
+  const rows = useSelector(selectWalletTransactions);
+
+  const param = useLocation().search;
+  console.log(wallet);
+  const { message } = useSelector((state) => state.message);
+
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -251,10 +303,40 @@ export default function BuyerManageContract() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [openPayment, setOpenPayment] = useState(false);
+
+  const [openPayment2, setOpenPayment2] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [price, setPrice] = useState(wallet.withdraw);
+
+  console.log(rows);
+  const handleOpenPayment = () => {
+    setOpenPayment(true);
+  };
+
+  const handleClosePayment = () => {
+    setOpenPayment(false);
+  };
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchListContracts());
-  }, []);
+  const navigate = useNavigate();
+  const handleOpenPayment2 = (e) => {
+    // e.preventDefault();
+    const obj = { charge: price, currency: "USD" };
+    dispatch(topup(obj))
+      .unwrap()
+      .then(() => {
+        setOpenPayment(false);
+      })
+      .catch(() => {
+        setError("thất bại!");
+      });
+  };
+  const handleClosePayment2 = () => {
+    setOpenPayment2(false);
+  };
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -263,11 +345,31 @@ export default function BuyerManageContract() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = listContract.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
+  };
+
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+
+    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -286,15 +388,36 @@ export default function BuyerManageContract() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows =
-    rowsPerPage -
-    Math.min(rowsPerPage, listContract.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  useEffect(() => {
+    dispatch(clearMessage());
+    if (message) navigate(`//${message.slice(8)}`);
+  }, [dispatch, message]);
+  useEffect(() => {
+    if (param) {
+      dispatch(topupSuccess(param))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchWallet());
+          setSuccess("thafnh ocng bại!");
+        })
+        .catch(() => {
+          setError("thất bại!");
+        });
+    }
+  }, []);
   return (
     <div className="buyer_profile">
-      <BuyerHeader />
+      <BuyerHeader /> <h1 className="wallet_title">Quản lý ví</h1>
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <EnhancedTableToolbar numSelected={selected.length} />
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            handleOpenPayment={handleOpenPayment}
+            price={wallet.withdraw}
+            income={wallet.income}
+          />
           <TableContainer>
             <Table
               className={classes.table}
@@ -309,13 +432,13 @@ export default function BuyerManageContract() {
                 orderBy={orderBy}
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
-                rowCount={listContract.length}
+                rowCount={rows.length}
               />
               <TableBody>
-                {stableSort(listContract, getComparator(order, orderBy))
+                {stableSort(rows, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.id);
+                    const isItemSelected = isSelected(row.name);
                     const labelId = `enhanced-table-checkbox-${index}`;
 
                     return (
@@ -324,25 +447,20 @@ export default function BuyerManageContract() {
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.id}
+                        key={row.name}
                         selected={isItemSelected}
                       >
                         <TableCell component="th" id={labelId} scope="row">
-                          {row.contractCode}
+                          {row.description}
                         </TableCell>
-                        <TableCell align="right">{row.quantity}</TableCell>
+                        <TableCell align="right">{row.subCate}</TableCell>
+                        <TableCell align="right">{row.skills}</TableCell>
+                        <TableCell align="right">{row.price} $</TableCell>
                         <TableCell align="right">
-                          {row.contractCancelFee} %
-                        </TableCell>
-                        <TableCell align="right">{row.totalPrice} $</TableCell>
-                        <TableCell align="right">
-                          {row.expectCompleteDate}
+                          {row.cancleFee} %
                         </TableCell>{" "}
                         <TableCell align="right">
-                          {row.deliveryStatus}
-                        </TableCell>{" "}
-                        <TableCell align="right">
-                          <Link to={row.id}>
+                          <Link to="test">
                             <Button variant="outlined" color="primary">
                               Chi tiết
                             </Button>
@@ -362,7 +480,7 @@ export default function BuyerManageContract() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={listContract.length}
+            count={rows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -374,6 +492,57 @@ export default function BuyerManageContract() {
           label="Dày đặc"
         />
       </div>
+      <Dialog
+        fullWidth="true"
+        maxWidth="sm"
+        open={openPayment2}
+        onClose={handleClosePayment2}
+        aria-labelledby="max-width-dialog-title"
+      >
+        {" "}
+        <DialogTitle id="max-width-dialog-title">
+          Hình thức nạp tiền
+        </DialogTitle>
+        <DialogContent>
+          <Checkout description={"Nạp tiền vào ví"} price={price} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePayment2} color="primary">
+            Đóng
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        fullWidth="true"
+        maxWidth="sm"
+        open={openPayment}
+        onClose={handleClosePayment}
+        aria-labelledby="max-width-dialog-title"
+      >
+        {" "}
+        <DialogTitle id="max-width-dialog-title">Nhập số tiền</DialogTitle>
+        <DialogContent>
+          <TextField
+            id="outlined-basic"
+            variant="outlined"
+            type="number"
+            label="Số tiền"
+            InputProps={{
+              inputProps: { min: 0 },
+              endAdornment: <InputAdornment position="end">$</InputAdornment>,
+            }}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleOpenPayment2} color="primary">
+            Xác nhận
+          </Button>
+          <Button onClick={handleClosePayment} color="primary">
+            Đóng
+          </Button>
+        </DialogActions>
+      </Dialog>
       <div className="sections_profile">
         <Contact />
       </div>

@@ -11,13 +11,23 @@ import { Button, Container, Grid } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { selectAllCategories } from "../../../redux/categorySlice";
-import { fetchServices, selectAllServices } from "../../../redux/serviceSlice";
+import {
+  fetchServices,
+  fetchServicesByCategory,
+  selectAllServices,
+} from "../../../redux/serviceSlice";
 import { useState } from "react";
 import Pagination from "@material-ui/lab/Pagination";
 import { useEffect } from "react";
-import { fetchCurrentUser, selectCurrentUser } from "../../../redux/userSlice";
+import {
+  fetchCurrentUser,
+  fetchTopSellers,
+  selectCurrentUser,
+} from "../../../redux/userSlice";
 import { AddAlarm, AddSharp } from "@material-ui/icons";
 import { fetchRequestsSeller } from "../../../redux/requestSlice";
+import { fetchContracts } from "../../../redux/contractSlice";
+import CategoryList from "../../../components/guest/categoryList/CategoryList";
 function ChangeFormateDate(oldDate) {
   return oldDate.toString().split("-").reverse().join("-");
 }
@@ -26,19 +36,20 @@ export default function SellerHome() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const currentUser = useSelector(selectCurrentUser);
+  const listCategory = useSelector(selectAllCategories);
   const listService = useSelector(selectAllServices);
-  const [selected, setSelected] = useState("featured");
+  const [selected, setSelected] = useState(listCategory[0].id);
   useEffect(() => {
     if (!user) {
       navigate("/auth/login");
     } else if (currentUser.joinSellingAt == null) {
       navigate("/errorPage");
     } else {
-      dispatch(fetchCurrentUser());
-      dispatch(fetchServices());
-      dispatch(fetchRequestsSeller());
+      // dispatch(fetchServices());
+
+      dispatch(fetchServicesByCategory(selected));
     }
-  }, [user]);
+  }, [user, selected]);
   const dateJoin = ChangeFormateDate(currentUser.joinSellingAt);
   return (
     <div className="sellerHome">
@@ -99,6 +110,16 @@ export default function SellerHome() {
           </div>
         </div>
         <div className="sellerHome_right">
+          <ul className="list">
+            {listCategory.slice(0, 7).map((item) => (
+              <CategoryList
+                title={item.name}
+                active={selected === item.id}
+                setSelected={setSelected}
+                id={item.id}
+              />
+            ))}
+          </ul>
           <Link to="/sellerHome/createService">
             <Button
               variant="contained"
@@ -152,11 +173,17 @@ export default function SellerHome() {
       </div>
       <div style={{ display: "flex" }}>
         <SellerIntro description={currentUser.seller.descriptionBio} />
-        <SellerSkill skills={currentUser.seller.skills} />
+        <SellerSkill skills={currentUser.seller.skills} id={currentUser.id} />
       </div>
       <div style={{ display: "flex" }}>
-        <SellerEducate educations={currentUser.seller.educations} />
-        <SellerCertificate certificates={currentUser.seller.certificates} />
+        <SellerEducate
+          educations={currentUser.seller.educations}
+          id={currentUser.id}
+        />
+        <SellerCertificate
+          certificates={currentUser.seller.certificates}
+          id={currentUser.id}
+        />
       </div>
 
       <div className="sections">

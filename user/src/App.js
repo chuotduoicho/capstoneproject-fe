@@ -36,11 +36,12 @@ import SellerManageRequest from "./pages/seller/sellerManageRequest/SellerManage
 import SellerManageOrder from "./pages/seller/sellerManageOrder/SellerManageOrder";
 import SellerOrderDetail from "./pages/seller/sellerOrderDetail/SellerOrderDetail";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import BuyerManageWallet from "./pages/buyer/buyerManageWallet/BuyerManageWallet";
+import SellerManageOffer from "./pages/seller/sellerManageOffer/SellerManageOffer";
+import SellerContractDetail from "./pages/seller/sellerContractDetail/SellerContractDetail";
+import BuyerPaymentOffer from "./pages/buyer/buyerPayment/BuyerPaymentOffer";
 function App() {
   return (
-    // <PayPalScriptProvider
-    //   options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID }}
-    // >
     <div>
       <BrowserRouter>
         <Routes>
@@ -88,7 +89,13 @@ function App() {
 
               <Route path=":offerId" element={<BuyerOfferDetail />} />
             </Route>
-            <Route path="payment/:requestId" element={<BuyerPayment />} />
+
+            <Route path="manageWallet">
+              <Route index element={<BuyerManageWallet />} />
+            </Route>
+
+            <Route path="payment" element={<BuyerPayment />} />
+            <Route path="paymentOffer" element={<BuyerPaymentOffer />} />
             <Route path="listSeller/:requestId" element={<ListSeller />} />
           </Route>
           <Route path="/sellerhome">
@@ -100,7 +107,7 @@ function App() {
             </Route>
             <Route path="manageContract">
               <Route index element={<SellerManageContract />} />
-              <Route path=":contractId" element={<BuyerContractDetail />} />
+              <Route path=":contractId" element={<SellerContractDetail />} />
             </Route>
             <Route path="manageOrder">
               <Route index element={<SellerManageOrder />} />
@@ -112,7 +119,7 @@ function App() {
               element={<SellerCreateOffer />}
             />
             <Route path="manageOffer">
-              <Route index element={<BuyerManageOffer />} />
+              <Route index element={<SellerManageOffer />} />
 
               <Route path=":offerId" element={<SellerOfferDetail />} />
             </Route>
@@ -131,7 +138,6 @@ function App() {
         </Routes>
       </BrowserRouter>
     </div>
-    // </PayPalScriptProvider>
   );
 }
 

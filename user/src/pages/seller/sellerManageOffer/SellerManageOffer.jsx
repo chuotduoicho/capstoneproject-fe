@@ -25,25 +25,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOffersSeller, selectAllOffer } from "../../../redux/requestSlice";
 function createData(description, subCate, skills, price, cancleFee) {
   return { description, subCate, skills, price, cancleFee };
 }
-
-const rows = [
-  createData("Mô tả ngắn abcdsssssssssss", "Kinh doanh tự do", "HTML", 67, 4.3),
-  createData("Donut", "Kinh doanh tự dosdsd", "JS", 51, 4.9),
-  createData("Eclair", "Kinh doanh tự dsdsdao", "JS", 24, 6.0),
-  createData("Frozen yoghurt", "Kinh doanh tự áddo", "HTML", 24, 4.0),
-  createData("Gingerbread", "Kinh doanh tựád do", "CSS", 49, 3.9),
-  createData("Honeycomb", "Kinh doanh tự do", "HTML", 87, 6.5),
-  createData("Ice cream ", "Kinh doanh tự do", "JS", 37, 4.3),
-  createData("Jelly Bean", "Kinh doanh tự do", "CSS", 94, 0.0),
-  createData("KitKat", "Kinh doanh tự do", "HTML", 65, 7.0),
-  createData("Lollipop", "Kinh doanh tự do", "HTML", 98, 0.0),
-  createData("Marshmallow", "Kinh doanh tự do", "CSS", 81, 2.0),
-  createData("Nougat", "Kinh doanh tự do", "CSS", 9, 37.0),
-  createData("Oreo", "Kinh doanh tự do", "CSS", 63, 4.0),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -73,23 +60,23 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "description",
+    id: "descriptionBio",
     numeric: false,
     disablePadding: false,
     label: "Mô tả",
   },
   {
-    id: "subCate",
+    id: "totalDeliveryTime",
     numeric: true,
     disablePadding: false,
-    label: "Danh mục con",
+    label: "Số ngày bàn giao",
   },
-  { id: "skills", numeric: true, disablePadding: false, label: "Kĩ năng" },
+  // { id: "skills", numeric: true, disablePadding: false, label: "Kĩ năng" },
   {
-    id: "price",
+    id: "offerPrice",
     numeric: true,
     disablePadding: false,
-    label: "Tổng chi phí (g)",
+    label: "Chi phí",
   },
   {
     id: "cancleFee",
@@ -98,11 +85,17 @@ const headCells = [
     label: "Phí hủy hợp đồng",
   },
   {
-    id: "action",
+    id: "offerRequestStatus",
     numeric: true,
     disablePadding: false,
-    label: "",
+    label: "Trạng thái",
   },
+  // {
+  //   id: "action",
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: "",
+  // },
 ];
 
 function EnhancedTableHead(props) {
@@ -262,6 +255,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function SellerManageOffer() {
+  const rows = useSelector(selectAllOffer);
+
+  console.log("list Offer", rows);
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -269,7 +265,10 @@ export default function SellerManageOffer() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchOffersSeller());
+  }, []);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -325,7 +324,7 @@ export default function SellerManageOffer() {
 
   return (
     <div className="buyer_profile">
-      <BuyerHeader />
+      <SellerHeader />
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <EnhancedTableToolbar numSelected={selected.length} />
@@ -374,16 +373,18 @@ export default function SellerManageOffer() {
                           scope="row"
                           // padding="none"
                         >
-                          {row.description}
+                          {row.descriptionBio}
                         </TableCell>
-                        <TableCell align="right">{row.subCate}</TableCell>
-                        <TableCell align="right">{row.skills}</TableCell>
-                        <TableCell align="right">{row.price} $</TableCell>
                         <TableCell align="right">
-                          {row.cancleFee} %
+                          {row.totalDeliveryTime}
+                        </TableCell>
+                        <TableCell align="right">{row.offerPrice} $</TableCell>
+                        <TableCell align="right">{row.cancelFee} %</TableCell>
+                        <TableCell align="right">
+                          {row.offerRequestStatus}
                         </TableCell>{" "}
                         <TableCell align="right">
-                          <Link to="test">
+                          <Link to={row.id}>
                             <Button variant="outlined" color="primary">
                               Chi tiết
                             </Button>

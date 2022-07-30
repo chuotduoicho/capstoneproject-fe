@@ -1,14 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { setMessage } from "./message";
 import requestService from "../services/request.service";
 const requests = JSON.parse(localStorage.getItem("requests"));
 const initialState = requests
   ? {
       listRequests: requests,
+      listOffers: [],
+      listSellersInvite: [],
       status: "idle",
     }
   : {
       listRequests: [],
+      listOffers: [],
+      listSellersInvite: [],
       status: "idle",
     };
 export const fetchRequestsBuyer = createAsyncThunk(
@@ -45,6 +48,24 @@ export const fetchSellerInvite = createAsyncThunk(
     return data;
   }
 );
+export const fetchOffersBuyer = createAsyncThunk(
+  "request/fetchOffersBuyer",
+  async (requestId) => {
+    console.log(requestId);
+    const data = await requestService.getOffersOfBuyer(requestId);
+    console.log(data);
+    return data;
+  }
+);
+export const fetchOffersSeller = createAsyncThunk(
+  "request/fetchOffersSeller",
+  async () => {
+    console.log();
+    const data = await requestService.getOffersOfSeller();
+    console.log(data);
+    return data;
+  }
+);
 export const addRequest = createAsyncThunk(
   "request/addRequest",
   async (request) => {
@@ -77,6 +98,15 @@ export const applyRequest = createAsyncThunk(
   async (requesId) => {
     console.log(requesId);
     const data = await requestService.applyRequest(requesId);
+    console.log(data);
+    return data;
+  }
+);
+export const applyOffer = createAsyncThunk(
+  "request/applyOffer",
+  async (obj) => {
+    console.log(obj);
+    const data = await requestService.applyOffer(obj);
     console.log(data);
     return data;
   }
@@ -151,13 +181,43 @@ const requestSlice = createSlice({
     [applyRequest.rejected]: (state, action) => {
       state.status = "failed";
     },
+    [applyOffer.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [applyOffer.fulfilled]: (state, { payload }) => {
+      state.status = "success";
+    },
+    [applyOffer.rejected]: (state, action) => {
+      state.status = "failed";
+    },
     [fetchSellerInvite.pending]: (state, action) => {
       state.status = "loading";
     },
     [fetchSellerInvite.fulfilled]: (state, { payload }) => {
+      state.listSellersInvite = payload.sellersApply;
       state.status = "success";
     },
     [fetchSellerInvite.rejected]: (state, action) => {
+      state.status = "failed";
+    },
+    [fetchOffersSeller.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [fetchOffersSeller.fulfilled]: (state, { payload }) => {
+      state.listOffers = payload;
+      state.status = "success";
+    },
+    [fetchOffersSeller.rejected]: (state, action) => {
+      state.status = "failed";
+    },
+    [fetchOffersBuyer.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [fetchOffersBuyer.fulfilled]: (state, { payload }) => {
+      state.listOffers = payload;
+      state.status = "success";
+    },
+    [fetchOffersBuyer.rejected]: (state, action) => {
       state.status = "failed";
     },
   },
@@ -173,3 +233,10 @@ export const selectRequestById = (state, requestId) =>
   state.request.listRequests.find(
     (request) => request.postRequestId === requestId
   );
+export const selectAllOffer = (state) => state.request.listOffers;
+export const selectOfferById = (state, offerId) =>
+  state.request.listOffers.find((offer) => offer.id === offerId);
+export const selectAllSellersInvite = (state) =>
+  state.request.listSellersInvite;
+export const selectSellersById = (state, sellerId) =>
+  state.request.listSellersInvite.find((seller) => (seller.id = sellerId));

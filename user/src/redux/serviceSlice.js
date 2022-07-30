@@ -4,7 +4,7 @@ import ServiceService from "../services/service.service";
 const services = JSON.parse(localStorage.getItem("services"));
 const initialState = services
   ? {
-      listServices: services,
+      listServices: services.content,
       newServiceId: null,
       status: "idle",
     }
@@ -57,6 +57,15 @@ export const updateService = createAsyncThunk(
     return data;
   }
 );
+export const updateServicePackage = createAsyncThunk(
+  "service/updateServicePackage",
+  async (obj) => {
+    console.log(obj);
+    const data = await ServiceService.updateServicePackage(obj);
+    console.log(data);
+    return data;
+  }
+);
 
 const serviceSlice = createSlice({
   name: "service",
@@ -66,7 +75,7 @@ const serviceSlice = createSlice({
       state.status = "loading";
     },
     [fetchServices.fulfilled]: (state, { payload }) => {
-      state.listServices = payload;
+      state.listServices = payload.content;
       state.status = "success";
     },
     [fetchServices.rejected]: (state, action) => {
@@ -76,7 +85,7 @@ const serviceSlice = createSlice({
       state.status = "loading";
     },
     [fetchServicesByCategory.fulfilled]: (state, { payload }) => {
-      state.listServices = payload;
+      state.listServices = payload.content;
       state.status = "success";
     },
     [fetchServicesByCategory.rejected]: (state, action) => {
@@ -100,6 +109,16 @@ const serviceSlice = createSlice({
       state.status = "success";
     },
     [updateService.rejected]: (state, action) => {
+      state.status = "failed";
+    },
+    [updateServicePackage.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [updateServicePackage.fulfilled]: (state, { payload }) => {
+      state.newServiceId = payload.id;
+      state.status = "success";
+    },
+    [updateServicePackage.rejected]: (state, action) => {
       state.status = "failed";
     },
   },

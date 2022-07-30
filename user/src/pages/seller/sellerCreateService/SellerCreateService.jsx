@@ -29,9 +29,11 @@ import {
   selectServiceById,
   selectServiceId,
   updateService,
+  updateServicePackage,
 } from "../../../redux/serviceSlice";
 import { selectCurrentUser } from "../../../redux/userSlice";
 import Alert from "@material-ui/lab/Alert";
+import { selectAllCategories } from "../../../redux/categorySlice";
 const QontoConnector = withStyles({
   alternativeLabel: {
     top: 10,
@@ -211,6 +213,11 @@ export default function SellerCreateService() {
   const [subCateId, setSubCateId] = useState(
     serviceId ? serviceDetail.subcategory.id : ""
   );
+  const listCategory = useSelector(selectAllCategories);
+  const [category, setCategory] = useState(listCategory[0]);
+  const handleChangeCategory = (e) => {
+    setCategory(e.target.value);
+  };
   const handleChangeTitle = (e) => {
     setTitle(e.target.value);
   };
@@ -265,27 +272,35 @@ export default function SellerCreateService() {
   function handlePackageChange(e, index) {
     const { name, value } = e.target;
     const list = [...packages];
+    console.log(list);
     list[index][name] = value;
+    console.log(list);
     setPackages(list);
   }
   console.log("packages", packages);
   const [galley1, setGallery1] = useState(
-    "https://i1-dulich.vnecdn.net/2021/07/16/1-1626437591.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=BWzFqMmUWVFC1OfpPSUqMA"
+    serviceId ? serviceDetail.gallery.imageGallery1 : null
   );
-  const [galley2, setGallery2] = useState(null);
-  const [galley3, setGallery3] = useState(null);
-  const [document, setDocument] = useState(null);
-  const handleChangeGallery1 = (e) => {
-    setGallery1(e.target.value);
+  const [galley2, setGallery2] = useState(
+    serviceId ? serviceDetail.gallery.imageGallery2 : null
+  );
+  const [galley3, setGallery3] = useState(
+    serviceId ? serviceDetail.gallery.imageGallery3 : null
+  );
+  const [document, setDocument] = useState(
+    serviceId ? serviceDetail.gallery.documentGallery : null
+  );
+  const handleChangeGallery1 = (value) => {
+    setGallery1(value);
   };
-  const handleChangeGallery2 = (e) => {
-    setGallery2(e.target.value);
+  const handleChangeGallery2 = (value) => {
+    setGallery2(value);
   };
-  const handleChangeGallery3 = (e) => {
-    setGallery3(e.target.value);
+  const handleChangeGallery3 = (value) => {
+    setGallery3(value);
   };
-  const handleChangeDocument = (e) => {
-    setDocument(e.target.value);
+  const handleChangeDocument = (value) => {
+    setDocument(value);
   };
   function getStepContent(step) {
     switch (step) {
@@ -298,6 +313,9 @@ export default function SellerCreateService() {
             titleDf={title}
             descriptionDf={description}
             subCateIdDf={subCateId}
+            listCategory={listCategory}
+            category={category}
+            setCategory={handleChangeCategory}
           />
         );
       case 1:
@@ -317,6 +335,10 @@ export default function SellerCreateService() {
             galley2={handleChangeGallery2}
             galley3={handleChangeGallery3}
             document={handleChangeDocument}
+            galley1V={galley1}
+            galley2V={galley2}
+            galley3V={galley3}
+            documentV={document}
           />
         );
       case 3:
@@ -380,18 +402,18 @@ export default function SellerCreateService() {
     }
 
     if (activeStep == 2) {
-      // if (title1 == "") {
-      //   setError("Chưa nhập tiêu đề!");
-      // } else if (description1 == "") {
-      //   setError("Chưa nhập sản phẩm bàn giao!");
-      // } else if (subCateId == "") {
-      //   setError("Chưa chọn danh mục!");
-      // } else {
-      //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      //   setError("");
-      // }
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      setError("");
+      if (galley1 == "") {
+        setError("Chưa chọn đủ ảnh!");
+      } else if (galley2 == "") {
+        setError("Chưa chọn đủ ảnh!");
+      } else if (galley3 == "") {
+        setError("Chưa chọn đủ ảnh!");
+      } else if (document == "") {
+        setError("Chưa chọn tài liệu!");
+      } else {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        setError("");
+      }
     }
   };
   const handleBack = () => {
@@ -417,6 +439,9 @@ export default function SellerCreateService() {
       },
       gallery: {
         imageGallery1: galley1,
+        imageGallery2: galley2,
+        imageGallery3: galley3,
+        documentGallery: document,
       },
       packages: packages,
     };
@@ -424,13 +449,11 @@ export default function SellerCreateService() {
     dispath(addService(newService))
       .unwrap()
       .then(() => {
-        setSuccess("add service successfull");
-        console.log("add service successfull");
+        setSuccess("Tạo dịch vụ thành công!");
         dispath(fetchServices());
       })
       .catch(() => {
-        setError("add service fail");
-        console.log("add service fail");
+        setError("Tạo dịch vụ thất bại !");
       });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -441,12 +464,15 @@ export default function SellerCreateService() {
       description: description,
       impression: 2,
       interesting: 2,
-      status: "DEACTIVE",
+      status: "ACTIVE",
       subCategory: {
         id: subCateId,
       },
       gallery: {
         imageGallery1: galley1,
+        imageGallery2: galley2,
+        imageGallery3: galley3,
+        documentGallery: document,
       },
       packages: packages,
     };
@@ -454,11 +480,11 @@ export default function SellerCreateService() {
     dispath(addService(newService))
       .unwrap()
       .then(() => {
-        console.log("add service successfull");
+        setSuccess("Tạo dịch vụ thành công!");
         dispath(fetchServices());
       })
       .catch(() => {
-        console.log("add service fail");
+        setError("Tạo dịch vụ thất bại !");
       });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -472,20 +498,29 @@ export default function SellerCreateService() {
       subCategory: {
         id: subCateId,
       },
-      gallery: {
-        imageGallery1: galley1,
-      },
     };
     const obj = { service: newService, serviceId };
     dispath(updateService(obj))
       .unwrap()
       .then(() => {
-        console.log("add service successfull");
+        console.log("update service successfull");
         dispath(fetchServices());
       })
       .catch(() => {
         console.log("add service fail");
       });
+
+    packages.map((p) => {
+      dispath(updateServicePackage(p))
+        .unwrap()
+        .then(() => {
+          console.log("update service package successfull");
+          dispath(fetchServices());
+        })
+        .catch(() => {
+          console.log("add service fail");
+        });
+    });
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
   const handleView = () => {
@@ -495,6 +530,7 @@ export default function SellerCreateService() {
   return (
     <div className="sellerHome">
       <SellerHeader />
+      <h1 className="sellerCreateService_title">Tạo dịch vụ</h1>
       <Stepper
         alternativeLabel
         activeStep={activeStep}

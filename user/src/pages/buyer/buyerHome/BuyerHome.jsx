@@ -23,7 +23,11 @@ import {
 } from "../../../redux/serviceSlice";
 import Pagination from "@material-ui/lab/Pagination";
 import Rating from "@material-ui/lab/Rating";
-import { fetchCurrentUser, selectCurrentUser } from "../../../redux/userSlice";
+import {
+  fetchCurrentUser,
+  fetchWallet,
+  selectCurrentUser,
+} from "../../../redux/userSlice";
 import usePagination from "../../../Pagination";
 import { fetchRequestsBuyer } from "../../../redux/requestSlice";
 export default function BuyerHome() {
@@ -49,6 +53,7 @@ export default function BuyerHome() {
       dispatch(fetchCurrentUser());
       dispatch(fetchServicesByCategory(selected));
       dispatch(fetchRequestsBuyer());
+      dispatch(fetchWallet());
     }
   }, [user, selected]);
 
@@ -108,7 +113,7 @@ export default function BuyerHome() {
       minPrice !== "" &&
       maxPrice === "" &&
       val.status === "ACTIVE" &&
-      val.packages[2].price >= minPrice
+      val.packages[0].price >= minPrice
     ) {
       return val;
     } else if (
@@ -119,7 +124,7 @@ export default function BuyerHome() {
       maxPrice === "" &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price >= minPrice
+      val.packages[0].price >= minPrice
     ) {
       return val;
     } else if (
@@ -129,7 +134,7 @@ export default function BuyerHome() {
       minPrice !== "" &&
       maxPrice === "" &&
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
-      val.packages[2].price >= minPrice
+      val.packages[0].price >= minPrice
     ) {
       return val;
     } else if (
@@ -141,7 +146,7 @@ export default function BuyerHome() {
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price >= minPrice
+      val.packages[0].price >= minPrice
     ) {
       return val;
     } else if (
@@ -150,7 +155,7 @@ export default function BuyerHome() {
       minPrice === "" &&
       maxPrice !== "" &&
       val.status === "ACTIVE" &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -161,7 +166,7 @@ export default function BuyerHome() {
       maxPrice !== "" &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -171,7 +176,7 @@ export default function BuyerHome() {
       minPrice === "" &&
       maxPrice !== "" &&
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -183,7 +188,7 @@ export default function BuyerHome() {
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -192,8 +197,8 @@ export default function BuyerHome() {
       minPrice !== "" &&
       maxPrice !== "" &&
       val.status === "ACTIVE" &&
-      val.packages[2].price >= minPrice &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price >= minPrice &&
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -204,8 +209,8 @@ export default function BuyerHome() {
       maxPrice !== "" &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price >= minPrice &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price >= minPrice &&
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -215,8 +220,8 @@ export default function BuyerHome() {
       minPrice !== "" &&
       maxPrice !== "" &&
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
-      val.packages[2].price >= minPrice &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price >= minPrice &&
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     } else if (
@@ -228,8 +233,8 @@ export default function BuyerHome() {
       val.subcategory.id.toLowerCase().includes(subCateId.toLowerCase()) &&
       (val.title.toLowerCase().includes(search.toLowerCase()) ||
         val.description.toLowerCase().includes(search.toLowerCase())) &&
-      val.packages[2].price >= minPrice &&
-      val.packages[2].price <= maxPrice
+      val.packages[0].price >= minPrice &&
+      val.packages[0].price <= maxPrice
     ) {
       return val;
     }
@@ -243,11 +248,13 @@ export default function BuyerHome() {
   return (
     <div className="buyerHome">
       <BuyerHeader search={setSearch} />
+
       <div className="buyerHome_form">
         <div className="buyerHome_left">
           <div className="listSearch">
             <h1 className="lsTitle">
-              Lọc dịch vụ <FilterListOutlined />
+              Lọc dịch vụ
+              <FilterListOutlined />
             </h1>
             <div className="lsItem">
               <FormControl fullWidth>

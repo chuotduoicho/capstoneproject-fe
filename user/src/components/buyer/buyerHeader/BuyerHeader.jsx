@@ -10,12 +10,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { logout } from "../../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogTitle } from "@material-ui/core";
 import { selectCurrentUser } from "../../../redux/userSlice";
+import { setMessage } from "../../../redux/message";
 export default function BuyerHeader({ search }) {
   const currentUser = useSelector(selectCurrentUser);
   const [open, setOpen] = useState(false);
-
+  const [text, setText] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const anchorRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,7 +25,22 @@ export default function BuyerHeader({ search }) {
     setOpen((prevOpen) => !prevOpen);
   };
   const handleJoinSeller = () => {
-    if (currentUser.joinSellingAt) {
+    if (currentUser.phoneNumber == null) {
+      setText("Bạn cần cập nhật đủ thông tin cơ bản để trở thành người bán");
+      setOpenDialog(true);
+    } else if (currentUser.gender == null) {
+      setText("Bạn cần cập nhật đủ thông tin cơ bản để trở thành người bán");
+      setOpenDialog(true);
+    } else if (currentUser.birthDate == null) {
+      setText("Bạn cần cập nhật đủ thông tin cơ bản để trở thành người bán");
+      setOpenDialog(true);
+    } else if (currentUser.city == null) {
+      setText("Bạn cần cập nhật đủ thông tin cơ bản để trở thành người bán");
+      setOpenDialog(true);
+    } else if (currentUser.country == null) {
+      setText("Bạn cần cập nhật đủ thông tin cơ bản để trở thành người bán");
+      setOpenDialog(true);
+    } else if (currentUser.joinSellingAt) {
       navigate("/sellerHome");
     } else {
       navigate("/sellerHome/sellerTerms");
@@ -83,9 +100,13 @@ export default function BuyerHeader({ search }) {
             onClick={handleToggle}
             className="item"
           >
-            {/* Xin chào, {currentUser.username} */}
+            Xin chào, {currentUser.username}
             <img
-              src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+              src={
+                currentUser.avatar
+                  ? currentUser.avatar
+                  : "https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+              }
               alt=""
               className="avatar"
             />
@@ -163,7 +184,7 @@ export default function BuyerHeader({ search }) {
                       </Link>
 
                       <Link
-                        to="/buyerhome/wallet"
+                        to="/buyerhome/manageWallet"
                         style={{ textDecoration: "none" }}
                       >
                         <MenuItem style={{ color: "black" }}>
@@ -187,6 +208,18 @@ export default function BuyerHeader({ search }) {
           </Popper>
         </div>
       </div>
+      <Dialog open={openDialog} onClose={handleClose}>
+        <DialogTitle id="dialod-title">{text}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Không</Button>
+          <Button
+            onClick={() => navigate("/buyerhome/profile")}
+            color="primary"
+          >
+            Đến cập nhật thông tin cơ bản
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
