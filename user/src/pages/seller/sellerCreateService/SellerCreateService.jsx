@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Contact from "../../../components/guest/contact/Contact";
 import "./sellerCreateService.scss";
 import SellerHeader from "../../../components/seller/sellerHeader/SellerHeader";
@@ -215,6 +215,9 @@ export default function SellerCreateService() {
   );
   const listCategory = useSelector(selectAllCategories);
   const [category, setCategory] = useState(listCategory[0]);
+  const [errorTitle, setErrorTitle] = React.useState("");
+  const [errorDescription, setErrorDescription] = React.useState("");
+  const [errorSubcate, setErrorSubcate] = React.useState("");
   const handleChangeCategory = (e) => {
     setCategory(e.target.value);
   };
@@ -227,6 +230,26 @@ export default function SellerCreateService() {
   const handleChangeSubcateId = (e) => {
     setSubCateId(e.target.value);
   };
+  // useEffect(() => {
+  //   if (title.length == 0) {
+  //     setErrorTitle("Chưa nhập tiêu đề!");
+  //   }
+  // }, [title]);
+  useEffect(() => {
+    if (title.length > 0 && errorTitle) {
+      setErrorTitle("");
+    }
+  }, [title, errorTitle]);
+  useEffect(() => {
+    if (description.length > 0 && errorDescription) {
+      setErrorDescription("");
+    }
+  }, [description, errorDescription]);
+  useEffect(() => {
+    if (subCateId.length > 0 && errorSubcate) {
+      setErrorSubcate("");
+    }
+  }, [subCateId, errorSubcate]);
   const [packages, setPackages] = useState(
     serviceId
       ? serviceDetail.packages
@@ -240,42 +263,64 @@ export default function SellerCreateService() {
           },
         ]
   );
+  const [packagesError, setPackagesError] = useState([
+    {
+      title: "",
+      shortDescription: "",
+      deliveryTime: "",
+      price: "",
+      contractCancelFee: "",
+    },
+  ]);
+
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
-    if (!checked) {
-      setPackages([
-        ...packages,
-        {
-          title: "",
-          shortDescription: "",
-          deliveryTime: "",
-          price: "",
-          contractCancelFee: "",
-        },
-        {
-          title: "",
-          shortDescription: "",
-          deliveryTime: "",
-          price: "",
-          contractCancelFee: "",
-        },
-      ]);
-      setChecked((prev) => !prev);
-    } else if (checked && packages.length > 1) {
-      const list = [...packages];
-      list.pop();
-      list.pop();
-      setPackages(list);
-      setChecked((prev) => !prev);
-    }
+    setPackages([
+      ...packages,
+      {
+        title: "",
+        shortDescription: "",
+        deliveryTime: "",
+        price: "",
+        contractCancelFee: "",
+      },
+    ]);
+    setPackagesError([
+      ...packagesError,
+      {
+        title: "",
+        shortDescription: "",
+        deliveryTime: "",
+        price: "",
+        contractCancelFee: "",
+      },
+    ]);
+  };
+  const handleChange2 = () => {
+    const list = [...packages];
+    list.pop();
+    setPackages(list);
+    const list2 = [...packagesError];
+    list2.pop();
+    setPackagesError(list2);
   };
   function handlePackageChange(e, index) {
     const { name, value } = e.target;
     const list = [...packages];
-    console.log(list);
+    const list2 = [...packagesError];
+    // console.log(list);
     list[index][name] = value;
-    console.log(list);
+    if (value != "") {
+      if (
+        name != "shortDescription" ||
+        (name == "shortDescription" && value.length > 20)
+      ) {
+        list2[index][name] = "";
+      }
+    }
+    // console.log(list);
     setPackages(list);
+    setPackagesError(list2);
   }
   console.log("packages", packages);
   const [galley1, setGallery1] = useState(
@@ -316,6 +361,9 @@ export default function SellerCreateService() {
             listCategory={listCategory}
             category={category}
             setCategory={handleChangeCategory}
+            errorTitle={errorTitle}
+            errorDescription={errorDescription}
+            errorSubcate={errorSubcate}
           />
         );
       case 1:
@@ -324,7 +372,9 @@ export default function SellerCreateService() {
             packages={packages}
             checked={checked}
             handleChange={handleChange}
+            handleChange2={handleChange2}
             handlePackageChange={handlePackageChange}
+            packagesError={packagesError}
           />
         );
 
@@ -357,58 +407,75 @@ export default function SellerCreateService() {
     setError("");
     if (activeStep == 0) {
       if (title == "") {
-        setError("Chưa nhập tiêu đề!");
-      } else if (description == "") {
-        setError("Chưa nhập mô tả!");
-      } else if (subCateId == "") {
-        setError("Chưa chọn danh mục!");
-      } else {
+        setErrorTitle("Tiêu đề không được trống!");
+      }
+      if (description == "") {
+        setErrorDescription("Mô tả không được trống!");
+      }
+      if (subCateId == "") {
+        setErrorSubcate("Danh mục không được trống!");
+      }
+      if (title != "" && description != "" && subCateId != "") {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setError("");
       }
     }
 
     if (activeStep == 1) {
-      const check = packages.map((p, index) => {
+      const list2 = [...packagesError];
+      let temp = packages[0].price;
+      packages.map((p, index) => {
+        console.log(index);
         if (p.title == "") {
-          setError("Chưa nhập tiêu đề gói " + (index + 1));
-          return false;
-        } else if (p.shortDescription == "") {
-          setError("Chưa nhập sản phẩm bàn giao gói " + (index + 1));
-          return false;
-        } else if (
+          list2[index].title = "Không được để trống";
+        }
+        if (
+          p.shortDescription == "" ||
           p.shortDescription.length < 20 ||
           p.shortDescription.length > 500
         ) {
-          setError(
-            "Sản phẩm bàn giao phải từ 20 đến 500 kí tự gói " + (index + 1)
-          );
-          return false;
-        } else if (p.deliveryTime == "") {
-          setError("Chưa nhập số ngày bàn giao gói " + (index + 1));
-          return false;
-        } else if (p.price == "") {
-          setError("Chưa nhập chi phí bàn giao gói " + (index + 1));
-          return false;
-        } else if (p.contractCancelFee == "") {
-          setError("Chưa nhập phí hủy bàn giao gói " + (index + 1));
-          return false;
-        } else if (index == packages.length - 1) {
-          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          list2[index].shortDescription = "Không được để trống và hơn 20 kí tự";
+        }
+        if (p.deliveryTime == "") {
+          list2[index].deliveryTime = "Không được để trống";
+        }
+        if (p.price == "") {
+          list2[index].price = "Không được để trống";
+        }
+        if (p.contractCancelFee == "") {
+          list2[index].contractCancelFee = "Không được để trống";
+        }
+        if (index > 0 && p.price <= temp) {
+          list2[index].price = "Giá phải cao hơn giá gói trước";
+        } else {
+          temp = p.price;
         }
       });
+      setPackagesError(list2);
 
-      console.log("check", check);
+      const check = packagesError.map((item, index) => {
+        if (
+          item.title == "" &&
+          item.shortDescription == "" &&
+          item.deliveryTime == "" &&
+          item.price == "" &&
+          item.contractCancelFee == "" &&
+          packagesError.length - 1 == index
+        ) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
+        console.log("abc");
+      });
     }
 
     if (activeStep == 2) {
-      if (galley1 == "") {
+      if (galley1 == null) {
         setError("Chưa chọn đủ ảnh!");
-      } else if (galley2 == "") {
+      } else if (galley2 == null) {
         setError("Chưa chọn đủ ảnh!");
-      } else if (galley3 == "") {
+      } else if (galley3 == null) {
         setError("Chưa chọn đủ ảnh!");
-      } else if (document == "") {
+      } else if (document == null) {
         setError("Chưa chọn tài liệu!");
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -610,8 +677,16 @@ export default function SellerCreateService() {
                   Tiếp tục
                 </Button>
               )}
-              {error !== "" && <Alert severity="error">{error}</Alert>}
-              {success !== "" && <Alert severity="success">{success}</Alert>}
+              {error !== "" && (
+                <Alert severity="error" style={{ justifyContent: "center" }}>
+                  {error}
+                </Alert>
+              )}
+              {success !== "" && (
+                <Alert severity="success" style={{ justifyContent: "center" }}>
+                  {success}
+                </Alert>
+              )}
             </div>
           </div>
         )}
